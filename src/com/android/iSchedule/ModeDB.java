@@ -26,7 +26,7 @@ public class ModeDB extends SQLiteOpenHelper{
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO 自动生成的方法存根
-		
+		// panxiaoning edit
 	}
 	
 	// insert operation
