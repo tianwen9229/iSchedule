@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 import android.os.Bundle;
+import android.R.string;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
@@ -32,10 +33,11 @@ public class Main extends Activity {
 		eventList = (ListView) this.findViewById(R.id.Event);
 		
 		
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		Date curDate = new Date(System.currentTimeMillis());
 		String curDateString = formatter.format(curDate);
 		
+
 		String [] item = {curDateString+"之前的日程", "日程1", "日程1", "日程1", "日程1", 
 				"日程1", "日程1", "日程1", "日程1", "日程1", "日程2", curDateString+"之后的日程"};
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 

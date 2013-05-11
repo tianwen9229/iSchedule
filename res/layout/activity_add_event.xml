@@ -22,7 +22,7 @@
             android:background="#8cc6ea"
             android:gravity="center"
             android:text="@string/add_event"
-            android:textSize="15dp" />
+            android:textSize="20dp" />
 
         <ImageButton
             android:id="@+id/back"
