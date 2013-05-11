@@ -1,7 +1,5 @@
 package com.android.iSchedule;
 
-import android.R.integer;
-
 public class Mode {
 	
 	private int modeId;

@@ -5,15 +5,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class EventDB extends SQLiteOpenHelper {
+public class iScheduleDB extends SQLiteOpenHelper {
 
-	private static final String DB_NAME = "event.db";
+	private static final String DB_NAME = "iSchedule.db";
 	private static final int DB_VRESION = 1;
 	private static final String TABLE_NAME = "event";
 	//private static final String SQL_CREATE_TABLE = "TO DO"
 	
 	
-	public EventDB(Context context, String name, CursorFactory factory,
+	public iScheduleDB(Context context, String name, CursorFactory factory,
 			int version) {
 		super(context, name, factory, version);
 		// TODO 自动生成的构造函数存根
