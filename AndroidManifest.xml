@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity 
+            android:name="com.android.iSchedule.AddEvent" >
+        </activity>
+        
+        <activity 
+            android:name="com.android.iSchedule.AddMode" >
+        </activity>
     </application>
 
 </manifest>

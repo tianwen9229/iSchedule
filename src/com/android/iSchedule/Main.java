@@ -5,7 +5,10 @@ import java.text.SimpleDateFormat;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -33,13 +36,26 @@ public class Main extends Activity {
 		Date curDate = new Date(System.currentTimeMillis());
 		String curDateString = formatter.format(curDate);
 		
-		String [] item = {curDateString+"之前的日程", "日程1", "日程2", curDateString+"之后的日程"};
+		String [] item = {curDateString+"之前的日程", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程2", curDateString+"之后的日程"};
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
 		eventList.setAdapter(adapter);
 		
 		datePickButton.setText(curDateString);
+		
+		
+		addEventButton.setOnClickListener(addOnClick);
 	}
-
+	
+	public OnClickListener addOnClick = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO 自动生成的方法存根
+			Intent intent=new Intent();
+    		intent.setClass(Main.this,AddEvent.class);
+    		startActivity(intent);
+		}
+	};
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
