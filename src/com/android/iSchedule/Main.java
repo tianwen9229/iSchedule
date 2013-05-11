@@ -36,7 +36,8 @@ public class Main extends Activity {
 		Date curDate = new Date(System.currentTimeMillis());
 		String curDateString = formatter.format(curDate);
 		
-		String [] item = {curDateString+"之前的日程", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程1", "日程2", curDateString+"之后的日程"};
+		String [] item = {curDateString+"之前的日程", "日程1", "日程1", "日程1", "日程1", 
+				"日程1", "日程1", "日程1", "日程1", "日程1", "日程2", curDateString+"之后的日程"};
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
 		eventList.setAdapter(adapter);
 		
