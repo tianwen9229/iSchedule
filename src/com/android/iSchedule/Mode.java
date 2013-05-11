@@ -8,6 +8,4 @@ public class Mode {
 	// test branches
 	// To Do 
 	// Setter and Getter
-	
-	
 }
