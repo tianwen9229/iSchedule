@@ -59,7 +59,7 @@ public class Event {
 		return this.remindTime;
 		}
 	public Date getStartTime() {
-		return this.createTime;
+		return this.startTime;
 		}
 	public Date getEndTime() {
 		return this.endTime;
