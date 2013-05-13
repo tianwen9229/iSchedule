@@ -41,12 +41,23 @@ public class Main extends Activity {
 		String [] item = {curDateString+"之前的日程", "日程1", "日程1", "日程1", "日程1", 
 				"日程1", "日程1", "日程1", "日程1", "日程1", "日程2", curDateString+"之后的日程"};
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
-		eventList.setAdapter(adapter);
+		
 		
 		datePickButton.setText(curDateString);
 		
-		
 		addEventButton.setOnClickListener(addOnClick);
+		
+		Event e = new Event("hehe", "hehe", "hehe", curDate, curDate, curDate, curDate);
+		iScheduleDB helper = new iScheduleDB(this);
+		helper.insert(e);
+		
+		Mode m = new Mode(1, 2);
+		helper.insert(m);
+		helper.insert(e, m);
+		
+		item[2] = Integer.toString((int) e.getEventId());
+		eventList.setAdapter(adapter);
+		
 	}
 	
 	public OnClickListener addOnClick = new OnClickListener() {

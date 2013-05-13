@@ -1,6 +1,5 @@
 package com.android.iSchedule;
 
-import java.text.Format;
 import java.text.SimpleDateFormat;
 
 import android.content.ContentValues;
@@ -34,14 +33,14 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	+ " vibrate integer); ";
 	
 	private static final String MODIFY_SQL_CREATE = "create table " + MODIFY_TABLE_NAME +
-	" ( eid integer primary key, "
-	+ " mid integer primary key, "
-	+ " foreign key (eid) refrences event, "
-	+ " foreign key (mid) refrences mode ";
+	" ( eid integer , "
+	+ " mid integer , "
+	+ " primary key (eid, mid), "
+	+ " foreign key (eid) references event , "
+	+ " foreign key (mid) references mode ); ";
 	
 	
-	public iScheduleDB(Context context, String name, CursorFactory factory,
-			int version) {
+	public iScheduleDB(Context context, String name, CursorFactory factory, int version) {
 		super(context, name, factory, version);
 	}
 	public iScheduleDB(Context context){
@@ -72,6 +71,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		values.put("endtime", dateFormat.format(entity.getEndTime()));
 		// 必须保证 values 至少一个字段不为null ，否则出错
 		long rid = db.insert(EVENT_TABLE_NAME, null, values);
+		entity.setEventId(rid);
 		db.close();
 		return rid;
 	}
@@ -83,6 +83,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		values.put("vibrate", entity.getVibrate());
 		// 必须保证 values 至少一个字段不为null ，否则出错
 		long rid = db.insert(MODE_TABLE_NAME, null, values);
+		entity.setModeId(rid);
 		db.close();
 		return rid;
 	}
@@ -90,8 +91,8 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	public long insert(Event event, Mode mode) {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues values = new ContentValues();
-		values.put("eventId", event.getId());
-		values.put("modeId", mode.getModeId());
+		values.put("eid", event.getEventId());
+		values.put("mid", mode.getModeId());
 		// 必须保证 values 至少一个字段不为null ，否则出错
 		long rid = db.insert(MODIFY_TABLE_NAME, null, values);
 		db.close();
