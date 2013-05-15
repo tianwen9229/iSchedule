@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 import android.os.Bundle;
+import android.provider.SyncStateContract.Helpers;
 import android.R.string;
 import android.app.Activity;
 import android.content.Intent;
@@ -21,6 +22,7 @@ public class Main extends Activity {
 	public Button datePickButton;
 	public ImageButton addEventButton;
 	public ListView eventList;
+	iScheduleDB helper = new iScheduleDB(this);
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +48,15 @@ public class Main extends Activity {
 		datePickButton.setText(curDateString);
 		
 		addEventButton.setOnClickListener(addOnClick);
-		
+
 		Event e = new Event("hehe", "hehe", "hehe", curDate, curDate, curDate, curDate);
-		iScheduleDB helper = new iScheduleDB(this);
+
 		helper.insert(e);
 		
 		Mode m = new Mode(1, 2);
 		helper.insert(m);
 		helper.insert(e, m);
+		helper.deleteModify(e, m);
 		
 		item[2] = Integer.toString((int) e.getEventId());
 		eventList.setAdapter(adapter);
@@ -65,9 +68,9 @@ public class Main extends Activity {
 		@Override
 		public void onClick(View v) {
 			// TODO 自动生成的方法存根
-			Intent intent=new Intent();
+			/*Intent intent=new Intent();
     		intent.setClass(Main.this,AddEvent.class);
-    		startActivity(intent);
+    		startActivity(intent);*/
 		}
 	};
 	@Override

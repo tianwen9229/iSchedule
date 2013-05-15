@@ -99,6 +99,42 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return rid;
 	}
 	
+	public int deleteEventById(Integer id){
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "eid = ?";
+		String[] whereArgs = { id.toString() };
+		int row = db.delete(EVENT_TABLE_NAME, whereClause, whereArgs);
+		db.close();
+		return row;
+	}
+	
+	public int deleteEventByTitle(String title){
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "title = ?";
+		String[] whereArgs = { title };
+		int row = db.delete(EVENT_TABLE_NAME, whereClause, whereArgs);
+		db.close();
+		return row;
+	}
+	
+	public int deleteModeById(Integer id){
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "mid = ?";
+		String[] whereArgs = { id.toString() };
+		int row = db.delete(MODE_TABLE_NAME, whereClause, whereArgs);
+		db.close();
+		return row;
+	}
+	
+	public int deleteModify(Event event, Mode mode){
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "mid = ? AND eid = ?";
+		String[] whereArgs = { Integer.toString((int) event.getEventId()),Integer.toString((int) mode.getModeId()),  };
+		int row = db.delete(MODIFY_TABLE_NAME, whereClause, whereArgs);
+		db.close();
+		return row;
+	}
+	
 	// insert operation
 	// delete operation
 	// update operation
