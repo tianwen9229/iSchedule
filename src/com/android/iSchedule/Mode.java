@@ -2,35 +2,32 @@ package com.android.iSchedule;
 
 public class Mode {
 	
-	private int modeId;
+	private long modeId;
 	private int volume;
 	private int vibrate;
 	// test branches
 	// To Do 
 	// Setter and Getter
-	public Mode()
-	{
-	}
 	
-	public Mode(int id, int vo, int vi)
+	public Mode(int vo, int vi)
 	{
-	modeId =id;
-	volume = vo;
-	vibrate = vi;
+		modeId = -1;
+		volume = vo;
+		vibrate = vi;
 	}
-	public int getModeId()
+	public long getModeId()
 	{
 		return modeId;
 	}
 	public int getVolume()
 	{
-	return volume;
+		return volume;
 	}
 	public int getVibrate()
 	{
 		return vibrate;
 	}
-    public void setModeId(int id)
+    public void setModeId(long id)
     {
     	this.modeId = id;
     }
