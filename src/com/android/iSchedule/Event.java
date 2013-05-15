@@ -8,10 +8,9 @@ import android.text.format.Time;
 
 public class Event {
 	
-	private int EventId;
+	private long EventId;
 	private String EventTitle;
 	private String Place;
-	private int frequency;
 	private String content;
 	
 	private Date createTime;
@@ -21,55 +20,55 @@ public class Event {
 	
 	// To Do 
 	// Setter and Getter
-	public Event()
-	{}
-	
-	public Event(int id, String title , String place, int fre, String con, Date cT, Date rT, Date sT, Date eT)
+	public Event( String title , String place, String con, Date cT, Date rT, Date sT, Date eT)
 	{
-		EventId = id;
+		EventId = -1;
 		EventTitle = title;
-		frequency = fre;
 		content = con;
+		Place = place;
 		createTime = cT;
 		remindTime = rT;
 		startTime = sT;
 		endTime = eT;
 	}
 	
-	public int getId()
+	public long getEventId()
 	{
 		return this.EventId;
 	}
-	public String getTitle() {
-		return this.EventTitle;
-		}
-	public String getPlace() {
-		return this.Place;
-		}
-	public int getFrequency() {
-		return this.frequency;
-		}
-	public String getContent() {
-		return this.content;
-		}
-	public Date getCreatTime() {
-		return this.createTime;
-		}
-	public Date getRemindTime() {
-		return this.remindTime;
-		}
-	public Date getStartTime() {
-		return this.startTime;
-		}
-	public Date getEndTime() {
-		return this.endTime;
-		}
-	
-	public void setId(int id)
+	public String getTitle()
 	{
-		this.EventId = id;
+		return this.EventTitle;
+	}
+	public String getPlace() 
+	{
+		return this.Place;
+	}
+	public String getContent() 
+	{
+		return this.content;
+	}
+	public Date getCreatTime()
+	{
+		return this.createTime;
+	}
+	public Date getRemindTime() 
+	{
+		return this.remindTime;
+	}
+	public Date getStartTime()
+	{
+		return this.startTime;
+	}
+	public Date getEndTime() 
+	{
+		return this.endTime;
 	}
 	
+	public void setEventId(long id) 
+	{
+		EventId = id;
+	}
 	public void setTitle(String title)
 	{
 		this.EventTitle = title;
@@ -77,9 +76,6 @@ public class Event {
 	public void setPlace(String place)
 	{
 		this.Place = place;
-	}
-	public void setFrequency(int frequency){
-		this.frequency = frequency;
 	}
 	public void setContent(String content)
 	{
