@@ -1,9 +1,12 @@
 package com.android.iSchedule;
 
+import java.lang.reflect.Member;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -35,7 +38,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	private static final String MODIFY_SQL_CREATE = "create table " + MODIFY_TABLE_NAME +
 	" ( eid integer , "
 	+ " mid integer , "
-	+ " primary key (eid, mid), "
+	+ " primary key (eid), "
 	+ " foreign key (eid) references event , "
 	+ " foreign key (mid) references mode ); ";
 	
@@ -128,15 +131,87 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	
 	public int deleteModify(Event event, Mode mode){
 		SQLiteDatabase db = getWritableDatabase();
-		String whereClause = "mid = ? AND eid = ?";
-		String[] whereArgs = { Integer.toString((int) event.getEventId()),Integer.toString((int) mode.getModeId()),  };
+		String whereClause = "eid = ?";
+		String[] whereArgs = { Integer.toString((int) event.getEventId()) };
 		int row = db.delete(MODIFY_TABLE_NAME, whereClause, whereArgs);
 		db.close();
 		return row;
 	}
 	
-	// insert operation
-	// delete operation
+	public int updateEventById(Event entity) {
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "eid = ?";
+		String[] whereArgs = { Integer.toString((int) entity.getEventId()) };
+		ContentValues values = new ContentValues();
+		values.put("title", entity.getTitle());
+		values.put("place", entity.getPlace());
+		values.put("content", entity.getContent());
+		values.put("creattime", dateFormat.format(entity.getCreatTime()));
+		values.put("remindtime", dateFormat.format(entity.getRemindTime()));
+		values.put("starttime", dateFormat.format(entity.getStartTime()));
+		values.put("endtime", dateFormat.format(entity.getEndTime()));
+		int rows = db.update(EVENT_TABLE_NAME, values, whereClause, whereArgs);
+		db.close();
+		return rows;
+	}
+	
+	public int updateEventByTitle(Event entity) {
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "title = ?";
+		String[] whereArgs = { entity.getTitle() };
+		ContentValues values = new ContentValues();
+		values.put("title", entity.getTitle());
+		values.put("place", entity.getPlace());
+		values.put("content", entity.getContent());
+		values.put("creattime", dateFormat.format(entity.getCreatTime()));
+		values.put("remindtime", dateFormat.format(entity.getRemindTime()));
+		values.put("starttime", dateFormat.format(entity.getStartTime()));
+		values.put("endtime", dateFormat.format(entity.getEndTime()));
+		int rows = db.update(EVENT_TABLE_NAME, values, whereClause, whereArgs);
+		db.close();
+		return rows;
+	}
+	
+	public int updateModeById(Mode entity){
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "mid = ?";
+		String[] whereArgs = { Integer.toString((int) entity.getModeId()) };
+		ContentValues values = new ContentValues();
+		values.put("volume", entity.getVolume());
+		values.put("vibrate", entity.getVibrate());
+		int row = db.update(MODE_TABLE_NAME, values, whereClause, whereArgs);
+		db.close();
+		return row;
+	}
+	
+	public int updateModify(Event event, Mode mode){
+		SQLiteDatabase db = getWritableDatabase();
+		String whereClause = "eid = ?";
+		String[] whereArgs = { Integer.toString((int) event.getEventId()) };
+		ContentValues values = new ContentValues();
+		values.put("eid", event.getEventId());
+		values.put("mid", mode.getModeId());
+		int row = db.update(MODIFY_TABLE_NAME, values, whereClause, whereArgs);
+		db.close();
+		return row;
+	}
+	
+	public Event getEventById(Integer id){
+		Event event = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String selection = "eid = ?";
+		String[] selectionArgs = { id.toString() };
+		Cursor c = db.query(EVENT_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+		if (c.moveToNext()){
+			event = new Event(c.getString(0),c.getString(1),c.getString(2),
+					Date.valueOf(c.getString(3)), Date.valueOf(c.getString(4)),
+					Date.valueOf(c.getString(5)), Date.valueOf(c.getString(6)));
+		}
+		c.close();
+		db.close();
+		return event;
+	}
+	
 	// update operation
 	// each search operation
 	
