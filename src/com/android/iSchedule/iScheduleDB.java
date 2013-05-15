@@ -2,14 +2,19 @@ package com.android.iSchedule;
 
 import java.lang.reflect.Member;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
+import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class iScheduleDB extends SQLiteOpenHelper {
 
@@ -203,15 +208,48 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		String[] selectionArgs = { id.toString() };
 		Cursor c = db.query(EVENT_TABLE_NAME, null, selection, selectionArgs, null, null, null);
 		if (c.moveToNext()){
-			event = new Event(c.getString(0),c.getString(1),c.getString(2),
-					Date.valueOf(c.getString(3)), Date.valueOf(c.getString(4)),
-					Date.valueOf(c.getString(5)), Date.valueOf(c.getString(6)));
+			event = new Event(c.getString(1),c.getString(2),c.getString(3),
+					Date.valueOf(c.getString(4)), Date.valueOf(c.getString(5)),
+					Date.valueOf(c.getString(6)), Date.valueOf(c.getString(7)));
+			event.setEventId(c.getLong(0));
 		}
 		c.close();
 		db.close();
 		return event;
 	}
 	
+	public List<Event> getEventByDate(Date date) throws ParseException {
+		List<Event> list = new ArrayList<Event>();
+		SQLiteDatabase db = getReadableDatabase();
+		SimpleDateFormat format_begin = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat format_end = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		String dateBegin = format_begin.format(date);
+		String dateEnd = format_end.format(date);
+		String SEARCH_EVENT = "select * from " + EVENT_TABLE_NAME
+				+ " where not ( datetime(starttime) > \"" + dateEnd + "\" or "
+				+ "datetime(endtime) < \"" + dateBegin + "\" );";
+		// Log.d("test", SEARCH_EVENT);
+		
+		Cursor c = db.rawQuery(SEARCH_EVENT, null);
+		while (c.moveToNext()){
+			Log.d("test", c.getString(1));
+			Log.d("test", c.getString(2));
+			Log.d("test", c.getString(3));
+			Log.d("test", c.getString(4));
+			Log.d("test", c.getString(5));
+			Log.d("test", c.getString(6));
+			Log.d("test", c.getString(7));
+			Event event = new Event(c.getString(1),c.getString(2),c.getString(3),
+					new Date(dateFormat.parse(c.getString(4)).getTime()), new Date(dateFormat.parse(c.getString(5)).getTime()),
+					new Date(dateFormat.parse(c.getString(6)).getTime()), new Date(dateFormat.parse(c.getString(7)).getTime()));
+			event.setEventId(c.getLong(0));
+			list.add(event);
+		}
+		c.close();
+		db.close();
+		
+		return list;
+	}
 	// update operation
 	// each search operation
 	

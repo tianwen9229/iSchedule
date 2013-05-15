@@ -1,7 +1,10 @@
 package com.android.iSchedule;
 
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.os.Bundle;
 import android.provider.SyncStateContract.Helpers;
@@ -39,10 +42,21 @@ public class Main extends Activity {
 		Date curDate = new Date(System.currentTimeMillis());
 		String curDateString = formatter.format(curDate);
 		
-
-		String [] item = {curDateString+"之前的日程", "日程1", "日程1", "日程1", "日程1", 
-				"日程1", "日程1", "日程1", "日程1", "日程1", "日程2", curDateString+"之后的日程"};
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
+		List<Event> list = new ArrayList<Event>();
+		List<String> item = new ArrayList<String>();
+		try {
+			list = helper.getEventByDate(curDate);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		for(int i = 0; i < list.size(); i++)
+		{
+			item.add(formatter.format(list.get(i).getStartTime()));
+		}
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item);
+		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
 		
 		
 		datePickButton.setText(curDateString);
@@ -58,7 +72,6 @@ public class Main extends Activity {
 		helper.insert(e, m);
 		helper.deleteModify(e, m);
 		
-		item[2] = Integer.toString((int) e.getEventId());
 		eventList.setAdapter(adapter);
 		
 	}
