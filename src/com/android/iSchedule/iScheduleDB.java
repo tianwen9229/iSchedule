@@ -232,18 +232,27 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		
 		Cursor c = db.rawQuery(SEARCH_EVENT, null);
 		while (c.moveToNext()){
-			Log.d("test", c.getString(1));
-			Log.d("test", c.getString(2));
-			Log.d("test", c.getString(3));
-			Log.d("test", c.getString(4));
-			Log.d("test", c.getString(5));
-			Log.d("test", c.getString(6));
-			Log.d("test", c.getString(7));
 			Event event = new Event(c.getString(1),c.getString(2),c.getString(3),
 					new Date(dateFormat.parse(c.getString(4)).getTime()), new Date(dateFormat.parse(c.getString(5)).getTime()),
 					new Date(dateFormat.parse(c.getString(6)).getTime()), new Date(dateFormat.parse(c.getString(7)).getTime()));
 			event.setEventId(c.getLong(0));
 			list.add(event);
+		}
+		c.close();
+		db.close();
+		
+		return list;
+	}
+	
+	public List<Mode> getAllModes() {
+		List<Mode> list = new ArrayList<Mode>();
+		SQLiteDatabase db = getReadableDatabase();
+
+		Cursor c = db.query(MODE_TABLE_NAME, null, null, null, null,null, null);
+		while (c.moveToNext()){
+			Mode mode = new Mode(c.getInt(1), c.getInt(2));
+			mode.setModeId(c.getLong(0));
+			list.add(mode);
 		}
 		c.close();
 		db.close();
