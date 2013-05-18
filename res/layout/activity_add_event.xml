@@ -8,7 +8,7 @@
         android:layout_height="52px"
         android:background="#8cc6ea" >
 
-        <Button
+        <ImageButton
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
