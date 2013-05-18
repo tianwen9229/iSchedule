@@ -40,22 +40,3 @@ public class Mode {
 		this.vibrate = vibrate;
 	}
 }
-> list = new ArrayList<Mode>();
-		SQLiteDatabase db = getReadableDatabase();
-
-		Cursor c = db.query(MODE_TABLE_NAME, null, null, null, null,null, null);
-		while (c.moveToNext()){
-			Mode mode = new Mode(c.getInt(1), c.getInt(2));
-			mode.setModeId(c.getLong(0));
-			list.add(mode);
-		}
-		c.close();
-		db.close();
-		
-		return list;
-	}
-	// update operation
-	// each search operation
-	
-	
-}
