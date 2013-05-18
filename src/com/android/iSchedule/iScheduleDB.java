@@ -64,7 +64,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
 	}
 	
 	public long insert(Event entity) {
@@ -77,7 +77,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		values.put("remindtime", dateFormat.format(entity.getRemindTime()));
 		values.put("starttime", dateFormat.format(entity.getStartTime()));
 		values.put("endtime", dateFormat.format(entity.getEndTime()));
-		// ±ØĞë±£Ö¤ values ÖÁÉÙÒ»¸ö×Ö¶Î²»Îªnull £¬·ñÔò³ö´í
+		// å¿…é¡»ä¿è¯ values è‡³å°‘ä¸€ä¸ªå­—æ®µä¸ä¸ºnull ï¼Œå¦åˆ™å‡ºé”™
 		long rid = db.insert(EVENT_TABLE_NAME, null, values);
 		entity.setEventId(rid);
 		db.close();
@@ -89,7 +89,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put("volume", entity.getVolume());
 		values.put("vibrate", entity.getVibrate());
-		// ±ØĞë±£Ö¤ values ÖÁÉÙÒ»¸ö×Ö¶Î²»Îªnull £¬·ñÔò³ö´í
+		// å¿…é¡»ä¿è¯ values è‡³å°‘ä¸€ä¸ªå­—æ®µä¸ä¸ºnull ï¼Œå¦åˆ™å‡ºé”™
 		long rid = db.insert(MODE_TABLE_NAME, null, values);
 		entity.setModeId(rid);
 		db.close();
@@ -101,7 +101,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put("eid", event.getEventId());
 		values.put("mid", mode.getModeId());
-		// ±ØĞë±£Ö¤ values ÖÁÉÙÒ»¸ö×Ö¶Î²»Îªnull £¬·ñÔò³ö´í
+		// å¿…é¡»ä¿è¯ values è‡³å°‘ä¸€ä¸ªå­—æ®µä¸ä¸ºnull ï¼Œå¦åˆ™å‡ºé”™
 		long rid = db.insert(MODIFY_TABLE_NAME, null, values);
 		db.close();
 		return rid;
