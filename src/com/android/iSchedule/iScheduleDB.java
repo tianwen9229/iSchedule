@@ -218,6 +218,21 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return event;
 	}
 	
+	public Mode getModeById(Integer id){
+		Mode mode = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String selection = "mid = ?";
+		String[] selectionArgs = {id.toString()};
+		Cursor c = db.query(MODE_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+		if (c.moveToNext()){
+			mode = new Mode(c.getInt(1), c.getInt(2));
+			mode.setModeId(c.getLong(0));
+		}
+		c.close();
+		db.close();
+		return mode;
+	}
+	
 	public List<Event> getEventByDate(Date date) throws ParseException {
 		List<Event> list = new ArrayList<Event>();
 		SQLiteDatabase db = getReadableDatabase();
@@ -258,6 +273,21 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		db.close();
 		
 		return list;
+	}
+	
+	Mode getModeByEventId(Integer id){
+		Mode mode = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String selection = "eid = ?";
+		String[] selectionArgs = {id.toString()};
+		Cursor c = db.query(MODIFY_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+		if (c.moveToNext()){
+			long mid = c.getLong(1);
+			mode = getModeById((int) mid);
+		}
+		c.close();
+		db.close();
+		return mode;
 	}
 	// update operation
 	// each search operation
