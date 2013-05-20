@@ -49,21 +49,26 @@ public class Main extends Activity {
 		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item);
 		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
 		
-		List<Mode> modes = new ArrayList<Mode>();
-		modes = helper.getAllModes();
 		datePickButton.setText(curDateString);
 		
 		addEventButton.setOnClickListener(addOnClick);
 
 		Event e = new Event("我们", "hehe", "hehe", curDate, curDate, curDate, curDate);
-
-		helper.insert(e);
+		Event enew = new Event("我们_new", "hehe", "hehe", curDate, curDate, curDate, curDate);
+		helper.insert(enew);
 		
 		Mode m = new Mode("hehe", 1, 2);
 		helper.insert(m);
 		helper.insert(e, m);
-		helper.deleteModify(e, m);
+		Event entity = null;
+		try {
+			entity = helper.getEventById(1);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
 		
+		List<Mode> modes = new ArrayList<Mode>();
+		modes = helper.getAllModes();
 		// eventList.setAdapter(adapter);
 		
 
