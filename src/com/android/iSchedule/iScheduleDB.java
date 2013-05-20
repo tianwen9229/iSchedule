@@ -37,6 +37,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	
 	private static final String MODE_SQL_CREATE = "create table " + MODE_TABLE_NAME +
 	" ( mid integer primary key autoincrement,"
+	+ " name text, " 
 	+ " volume integer, "
 	+ " vibrate integer); ";
 	
@@ -86,7 +87,16 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	
 	public long insert(Mode entity) {
 		SQLiteDatabase db = getWritableDatabase();
+		Cursor c = db.rawQuery("select * from " + MODE_TABLE_NAME + " ;", null);
+		if(c.getCount() == 0){
+			ContentValues values = new ContentValues();
+			values.put("name", "currentMode");
+			values.put("volume", 1);
+			values.put("vibrate", 0);
+			db.insert(MODE_TABLE_NAME, null, values);
+		}
 		ContentValues values = new ContentValues();
+		values.put("name", entity.getName());
 		values.put("volume", entity.getVolume());
 		values.put("vibrate", entity.getVibrate());
 		// 必须保证 values 至少一个字段不为null ，否则出错
@@ -182,6 +192,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		String whereClause = "mid = ?";
 		String[] whereArgs = { Integer.toString((int) entity.getModeId()) };
 		ContentValues values = new ContentValues();
+		values.put("name", entity.getName());
 		values.put("volume", entity.getVolume());
 		values.put("vibrate", entity.getVibrate());
 		int row = db.update(MODE_TABLE_NAME, values, whereClause, whereArgs);
@@ -225,7 +236,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		String[] selectionArgs = {id.toString()};
 		Cursor c = db.query(MODE_TABLE_NAME, null, selection, selectionArgs, null, null, null);
 		if (c.moveToNext()){
-			mode = new Mode(c.getInt(1), c.getInt(2));
+			mode = new Mode(c.getString(1), c.getInt(2), c.getInt(3));
 			mode.setModeId(c.getLong(0));
 		}
 		c.close();
@@ -265,7 +276,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 
 		Cursor c = db.query(MODE_TABLE_NAME, null, null, null, null,null, null);
 		while (c.moveToNext()){
-			Mode mode = new Mode(c.getInt(1), c.getInt(2));
+			Mode mode = new Mode(c.getString(1), c.getInt(2), c.getInt(3));
 			mode.setModeId(c.getLong(0));
 			list.add(mode);
 		}

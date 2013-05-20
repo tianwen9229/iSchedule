@@ -55,11 +55,11 @@ public class Main extends Activity {
 		
 		addEventButton.setOnClickListener(addOnClick);
 
-		Event e = new Event("hehe", "hehe", "hehe", curDate, curDate, curDate, curDate);
+		Event e = new Event("我们", "hehe", "hehe", curDate, curDate, curDate, curDate);
 
 		helper.insert(e);
 		
-		Mode m = new Mode(1, 2);
+		Mode m = new Mode("hehe", 1, 2);
 		helper.insert(m);
 		helper.insert(e, m);
 		helper.deleteModify(e, m);
