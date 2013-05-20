@@ -157,6 +157,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		SQLiteDatabase db = getWritableDatabase();
 		String whereClause = "eid = ?";
 		String[] whereArgs = { Integer.toString((int) entity.getEventId()) };
+		Log.d("test", Integer.toString((int) entity.getEventId()));
 		ContentValues values = new ContentValues();
 		values.put("title", entity.getTitle());
 		values.put("place", entity.getPlace());
@@ -212,7 +213,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return row;
 	}
 	
-	public Event getEventById(Integer id){
+	public Event getEventById(Integer id) throws ParseException{
 		Event event = null;
 		SQLiteDatabase db = getReadableDatabase();
 		String selection = "eid = ?";
@@ -220,8 +221,8 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		Cursor c = db.query(EVENT_TABLE_NAME, null, selection, selectionArgs, null, null, null);
 		if (c.moveToNext()){
 			event = new Event(c.getString(1),c.getString(2),c.getString(3),
-					Date.valueOf(c.getString(4)), Date.valueOf(c.getString(5)),
-					Date.valueOf(c.getString(6)), Date.valueOf(c.getString(7)));
+					new Date(dateFormat.parse(c.getString(4)).getTime()), new Date(dateFormat.parse(c.getString(5)).getTime()),
+					new Date(dateFormat.parse(c.getString(6)).getTime()), new Date(dateFormat.parse(c.getString(7)).getTime()));
 			event.setEventId(c.getLong(0));
 		}
 		c.close();
@@ -286,7 +287,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return list;
 	}
 	
-	Mode getModeByEventId(Integer id){
+	public Mode getModeByEventId(Integer id){
 		Mode mode = null;
 		SQLiteDatabase db = getReadableDatabase();
 		String selection = "eid = ?";

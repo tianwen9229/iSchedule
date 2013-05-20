@@ -13,23 +13,50 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <receiver android:name="CallAlarm">
+          	</receiver>
+        
         <activity
             android:name="com.android.iSchedule.Main"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
         </activity>
         
-        <activity 
-            android:name="com.android.iSchedule.AddEvent" >
-        </activity>
+		<activity android:name="com.android.iSchedule.AddEvent"> </activity>
+		<activity android:name="com.android.iSchedule.AddMode"> </activity>
+		
+		
+        <receiver
+            android:name="com.android.iSchedule.DiaryReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver> 
         
-        <activity 
-            android:name="com.android.iSchedule.AddMode" >
-        </activity>
+        <receiver
+            android:name="com.android.iSchedule.ModifyReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.DiaryReceiver" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver> 
+        
+        <receiver 
+            android:name="com.android.iSchedule.BootBroadcastReceiver"> 
+        	<intent-filter> 
+        		<action android:name="android.intent.action.BOOT_COMPLETED" /> 
+        		<category android:name="android.intent.category.HOME" />
+       		</intent-filter> 
+   		</receiver> 
+        
     </application>
-
+    
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED">
+    </uses-permission>
+    
 </manifest>
