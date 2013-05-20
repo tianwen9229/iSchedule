@@ -37,6 +37,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	
 	private static final String MODE_SQL_CREATE = "create table " + MODE_TABLE_NAME +
 	" ( mid integer primary key autoincrement,"
+	+ " name text, " 
 	+ " volume integer, "
 	+ " vibrate integer); ";
 	
@@ -64,7 +65,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+		// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
 	}
 	
 	public long insert(Event entity) {
@@ -77,7 +78,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		values.put("remindtime", dateFormat.format(entity.getRemindTime()));
 		values.put("starttime", dateFormat.format(entity.getStartTime()));
 		values.put("endtime", dateFormat.format(entity.getEndTime()));
-		// ±ØĞë±£Ö¤ values ÖÁÉÙÒ»¸ö×Ö¶Î²»Îªnull £¬·ñÔò³ö´í
+		// å¿…é¡»ä¿è¯ values è‡³å°‘ä¸€ä¸ªå­—æ®µä¸ä¸ºnull ï¼Œå¦åˆ™å‡ºé”™
 		long rid = db.insert(EVENT_TABLE_NAME, null, values);
 		entity.setEventId(rid);
 		db.close();
@@ -86,10 +87,19 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	
 	public long insert(Mode entity) {
 		SQLiteDatabase db = getWritableDatabase();
+		Cursor c = db.rawQuery("select * from " + MODE_TABLE_NAME + " ;", null);
+		if(c.getCount() == 0){
+			ContentValues values = new ContentValues();
+			values.put("name", "currentMode");
+			values.put("volume", 1);
+			values.put("vibrate", 0);
+			db.insert(MODE_TABLE_NAME, null, values);
+		}
 		ContentValues values = new ContentValues();
+		values.put("name", entity.getName());
 		values.put("volume", entity.getVolume());
 		values.put("vibrate", entity.getVibrate());
-		// ±ØĞë±£Ö¤ values ÖÁÉÙÒ»¸ö×Ö¶Î²»Îªnull £¬·ñÔò³ö´í
+		// å¿…é¡»ä¿è¯ values è‡³å°‘ä¸€ä¸ªå­—æ®µä¸ä¸ºnull ï¼Œå¦åˆ™å‡ºé”™
 		long rid = db.insert(MODE_TABLE_NAME, null, values);
 		entity.setModeId(rid);
 		db.close();
@@ -101,7 +111,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put("eid", event.getEventId());
 		values.put("mid", mode.getModeId());
-		// ±ØĞë±£Ö¤ values ÖÁÉÙÒ»¸ö×Ö¶Î²»Îªnull £¬·ñÔò³ö´í
+		// å¿…é¡»ä¿è¯ values è‡³å°‘ä¸€ä¸ªå­—æ®µä¸ä¸ºnull ï¼Œå¦åˆ™å‡ºé”™
 		long rid = db.insert(MODIFY_TABLE_NAME, null, values);
 		db.close();
 		return rid;
@@ -182,6 +192,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		String whereClause = "mid = ?";
 		String[] whereArgs = { Integer.toString((int) entity.getModeId()) };
 		ContentValues values = new ContentValues();
+		values.put("name", entity.getName());
 		values.put("volume", entity.getVolume());
 		values.put("vibrate", entity.getVibrate());
 		int row = db.update(MODE_TABLE_NAME, values, whereClause, whereArgs);
@@ -218,6 +229,21 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return event;
 	}
 	
+	public Mode getModeById(Integer id){
+		Mode mode = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String selection = "mid = ?";
+		String[] selectionArgs = {id.toString()};
+		Cursor c = db.query(MODE_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+		if (c.moveToNext()){
+			mode = new Mode(c.getString(1), c.getInt(2), c.getInt(3));
+			mode.setModeId(c.getLong(0));
+		}
+		c.close();
+		db.close();
+		return mode;
+	}
+	
 	public List<Event> getEventByDate(Date date) throws ParseException {
 		List<Event> list = new ArrayList<Event>();
 		SQLiteDatabase db = getReadableDatabase();
@@ -250,7 +276,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 
 		Cursor c = db.query(MODE_TABLE_NAME, null, null, null, null,null, null);
 		while (c.moveToNext()){
-			Mode mode = new Mode(c.getInt(1), c.getInt(2));
+			Mode mode = new Mode(c.getString(1), c.getInt(2), c.getInt(3));
 			mode.setModeId(c.getLong(0));
 			list.add(mode);
 		}
@@ -258,6 +284,21 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		db.close();
 		
 		return list;
+	}
+	
+	Mode getModeByEventId(Integer id){
+		Mode mode = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String selection = "eid = ?";
+		String[] selectionArgs = {id.toString()};
+		Cursor c = db.query(MODIFY_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+		if (c.moveToNext()){
+			long mid = c.getLong(1);
+			mode = getModeById((int) mid);
+		}
+		c.close();
+		db.close();
+		return mode;
 	}
 	// update operation
 	// each search operation

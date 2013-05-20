@@ -55,11 +55,11 @@ public class Main extends Activity {
 		
 		addEventButton.setOnClickListener(addOnClick);
 
-		Event e = new Event("hehe", "hehe", "hehe", curDate, curDate, curDate, curDate);
+		Event e = new Event("æˆ‘ä»¬", "hehe", "hehe", curDate, curDate, curDate, curDate);
 
 		helper.insert(e);
 		
-		Mode m = new Mode(1, 2);
+		Mode m = new Mode("hehe", 1, 2);
 		helper.insert(m);
 		helper.insert(e, m);
 		helper.deleteModify(e, m);
@@ -76,7 +76,7 @@ public class Main extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-			// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
+			// TODO è‡ªåŠ¨ç”Ÿæˆçš„æ–¹æ³•å­˜æ ¹
 			Intent intent=new Intent();
     		intent.setClass
     		(Main.this,AddEvent.class);
@@ -106,8 +106,8 @@ public class Main extends Activity {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("eid", Integer.toString((int) list.get(i).getEventId()));
 			map.put("title", list.get(i).getTitle());
-			map.put("beginTime", "¿ªÊ¼Ê±¼ä£º"+formatter.format(list.get(i).getStartTime()));
-			map.put("endTime", "½áÊøÊ±¼ä£º"+formatter.format(list.get(i).getEndTime()));
+			map.put("beginTime", "å¼€å§‹æ—¶é—´ï¼š"+formatter.format(list.get(i).getStartTime()));
+			map.put("endTime", "ç»“æŸæ—¶é—´ï¼š"+formatter.format(list.get(i).getEndTime()));
 			events.add(map);
 		}
 		
