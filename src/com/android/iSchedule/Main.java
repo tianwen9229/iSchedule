@@ -10,6 +10,9 @@ import java.util.Map;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
@@ -25,6 +28,8 @@ public class Main extends Activity {
 	public Button datePickButton;
 	public ImageButton addEventButton;
 	public ListView eventList;
+	AlarmManager diary_alarm;
+	
 	public List<Map<String, String>> events = new ArrayList<Map<String,String>>();
 	iScheduleDB helper = new iScheduleDB(this);
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -59,7 +64,7 @@ public class Main extends Activity {
 		
 		Mode m = new Mode("hehe", 1, 2);
 		helper.insert(m);
-		helper.insert(e, m);
+		helper.insert(enew, m);
 		Event entity = null;
 		try {
 			entity = helper.getEventById(1);
@@ -70,18 +75,22 @@ public class Main extends Activity {
 		List<Mode> modes = new ArrayList<Mode>();
 		modes = helper.getAllModes();
 		// eventList.setAdapter(adapter);
-		
 
-	
 		updateList();
-		
+
+		//闹钟管理
+		diary_alarm  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(this, DiaryReceiver.class);
+		PendingIntent senderPI = PendingIntent.getBroadcast(Main.this, 0, intent, 0);
+		diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), //24 * 60 * 60
+			5 * 1000, senderPI);
+
 	}
 	
 	public OnClickListener addOnClick = new OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
-			// TODO 自动生成的方法存根
 			Intent intent=new Intent();
     		intent.setClass
     		(Main.this,AddEvent.class);
@@ -118,6 +127,14 @@ public class Main extends Activity {
 		
 		((SimpleAdapter) eventList.getAdapter()).notifyDataSetChanged();
 	}
+	
+	private long getTime() {
+    	Date dateNow = new Date(System.currentTimeMillis());
+    	long hour = 24 - dateNow.getHours();
+    	long min = 0 - dateNow.getMinutes();
+    	long second = dateNow.getSeconds();
+    	return dateNow.getTime() + (hour*60 + min)*60*1000 - second*1000;
+    }
 }
 
 
