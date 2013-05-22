@@ -5,10 +5,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="52px"
+        android:layout_height="wrap_content"
         android:background="#8cc6ea" >
 
-        <ImageButton
+        <Button
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -16,153 +16,135 @@
 
         <TextView
             android:id="@+id/add_event_text"
-            android:layout_width="232dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1.03"
             android:background="#8cc6ea"
             android:gravity="center"
             android:text="@string/add_event"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
-        <ImageButton
-            android:id="@+id/back"
+        <Button
+            android:id="@+id/done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/done" />
     </LinearLayout>
 
     <ScrollView
-        android:id="@+id/scrollView1"
+        android:id="@+id/AddEventScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/eventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="@string/EventTitle" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/editTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10" />
-            
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-            
-            
+                android:ems="10"
+                android:hint="@string/EventTitleHint" />
+                      
            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
+               android:id="@+id/eventContent"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="@string/Content" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/editContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10" />
+                android:ems="10"
+                android:hint="@string/ContentHint" />
             
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/from"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="@string/From" />
 
-            <EditText
-                android:id="@+id/editText1"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" />
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/fromDatePicker"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2" />
+
+                <Button
+                    android:id="@+id/fromTimePicker"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
             
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/to"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="@string/To" />
+            
+           	<LinearLayout
+             	   android:layout_width="match_parent"
+             	   android:layout_height="wrap_content" >
+
+           		<Button
+               		android:id="@+id/toDatePicker"
+                   	android:layout_height="wrap_content"
+                   	android:layout_weight="2" />
+           		<Button
+                   	android:id="@+id/toTimePicker"
+                   	android:layout_weight="1"
+                   	android:layout_height="wrap_content" />
+           	</LinearLayout>
+           	
+           	<TextView
+        		android:id="@+id/Frequency"
+       	 		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:text="@string/Frequency" />
+
+    		<Spinner
+        		android:id="@+id/frequencySpinner"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content" />
+    		
+    		<TextView
+                android:id="@+id/eventPlace"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/EventPlace" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/editPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10" />
+                android:ems="10"
+                android:hint="@string/EventPlaceHint" />
             
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/modifyMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-            
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-            
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-            
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-            
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <EditText
-                android:id="@+id/editText1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10" />
-
-        </LinearLayout>
+                android:text="@string/ModifyMode" />
+  
+    		<Spinner
+        		android:id="@+id/modifyModeSpinner"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content" />
+    		
+    	</LinearLayout>            
     </ScrollView>
 
 </LinearLayout>

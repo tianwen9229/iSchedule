@@ -82,8 +82,8 @@ public class Main extends Activity {
 		diary_alarm  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(this, DiaryReceiver.class);
 		PendingIntent senderPI = PendingIntent.getBroadcast(Main.this, 0, intent, 0);
-		diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), //24 * 60 * 60
-			5 * 1000, senderPI);
+		//diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), //24 * 60 * 60
+		//	5 * 1000, senderPI);
 
 	}
 	
