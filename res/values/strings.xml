@@ -15,5 +15,6 @@
     <string name="ContentHint">活动说明</string>
     <string name="Frequency">重复</string>
     <string name="ModifyMode">要修改的情景模式</string>
+    <string name="RepeatTime">重复次数</string>
 
 </resources>

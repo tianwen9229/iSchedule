@@ -9,13 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
-import android.provider.Contacts.Intents.Insert;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,16 +23,16 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 public class Main extends Activity {
-    //
-	AlarmManager diary_alarm;
 	
 	public ImageButton menuButton;
 	public Button datePickButton;
 	public ImageButton addEventButton;
 	public ListView eventList;
+	AlarmManager diary_alarm;
+	
 	public List<Map<String, String>> events = new ArrayList<Map<String,String>>();
 	iScheduleDB helper = new iScheduleDB(this);
-	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	Date curDate = new Date(System.currentTimeMillis());
 	String curDateString = formatter.format(curDate);
 	
@@ -42,9 +40,6 @@ public class Main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		String tag = "Main";
-		
 		
 		menuButton = (ImageButton) this.findViewById(R.id.Menu);
 		datePickButton = (Button) this.findViewById(R.id.datePick);
@@ -59,58 +54,43 @@ public class Main extends Activity {
 		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item);
 		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
 		
-		List<Mode> modes = new ArrayList<Mode>();
-	    modes = helper.getAllModes();
-	    if(modes.size() == 0){
-	    	Mode mode_1 = new Mode("currentMode", 1, 0);
-	    	Mode mode_2 = new Mode("振动响铃", 1, 1);
-	    	Mode mode_3 = new Mode("振动", 0, 1);
-	    	helper.insert(mode_1);
-	    	helper.insert(mode_2);
-	    	helper.insert(mode_3);
-	    }
 		datePickButton.setText(curDateString);
 		
 		addEventButton.setOnClickListener(addOnClick);
-		
-		
-		Date curDatePls50sDate = curDate;
-		java.util.Date curDate2 = new java.util.Date(curDate.getTime());
-		java.util.Date curDatePls50sDate2 = curDate2;
-		curDatePls50sDate2.setSeconds(curDate2.getSeconds() + 50);
-		curDatePls50sDate = new java.sql.Date(curDatePls50sDate2.getTime());
-		
-		Date curDatePls60sDate = curDate;
-		java.util.Date curDate3 = new java.util.Date(curDate.getTime());
-		java.util.Date curDatePls60sDate2 = curDate3;
-		curDatePls60sDate2.setSeconds(curDate3.getSeconds() + 60);
-		curDatePls60sDate = new java.sql.Date(curDatePls60sDate2.getTime());
-		
-		curDateString = formatter.format(curDate);
-		Log.i(tag, curDateString);
-		Event e = new Event("hehe", "hehe", "hehe", curDate, curDate, curDatePls50sDate, curDatePls60sDate);
-		
-		helper.insert(e);
-		Mode m = new Mode("Mode", 0, 0);
-		helper.insert(e, m);
 
-		// eventList.setAdapter(adapter);
-		updateList();
+		Event e = new Event("我们", "hehe", "hehe", curDate, curDate, curDate, curDate);
+		Event enew = new Event("我们_new", "hehe", "hehe", curDate, curDate, curDate, curDate);
+		helper.insert(enew);
 		
+		Mode m = new Mode("hehe", 1, 2);
+		helper.insert(m);
+		helper.insert(enew, m);
+		Event entity = null;
+		try {
+			entity = helper.getEventById(1);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		
+		List<Mode> modes = new ArrayList<Mode>();
+		modes = helper.getAllModes();
+		// eventList.setAdapter(adapter);
+
+		updateList();
+
 		//闹钟管理
 		diary_alarm  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(this, DiaryReceiver.class);
-		PendingIntent senderPI = PendingIntent.getBroadcast(this, 0, intent, 0);
-    	diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), //24 * 60 * 60
-    			5 * 100 * 1000, senderPI);
-		 
+		PendingIntent senderPI = PendingIntent.getBroadcast(Main.this, 0, intent, 0);
+		//diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), //24 * 60 * 60
+		//	5 * 1000, senderPI);
+
 	}
 	
 	public OnClickListener addOnClick = new OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
-			// TODO 自动生成的方法存根
 			Intent intent=new Intent();
     		intent.setClass
     		(Main.this,AddEvent.class);
@@ -147,15 +127,14 @@ public class Main extends Activity {
 		
 		((SimpleAdapter) eventList.getAdapter()).notifyDataSetChanged();
 	}
+	
 	private long getTime() {
     	Date dateNow = new Date(System.currentTimeMillis());
-    	java.util.Date dateNow2 = new java.util.Date (dateNow.getTime());
-    	long hour = 24 - dateNow2.getHours();
-    	long min = 0 - dateNow2.getMinutes();
-    	long second = dateNow2.getSeconds();
-    	return (dateNow2.getTime() + (hour*60 + min)*60*1000 - second*1000);
+    	long hour = 24 - dateNow.getHours();
+    	long min = 0 - dateNow.getMinutes();
+    	long second = dateNow.getSeconds();
+    	return dateNow.getTime() + (hour*60 + min)*60*1000 - second*1000;
     }
-	
 }
 
 

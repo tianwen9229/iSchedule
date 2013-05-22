@@ -23,7 +23,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	private static final String EVENT_TABLE_NAME = "event";
 	private static final String MODE_TABLE_NAME = "mode";
 	private static final String MODIFY_TABLE_NAME = "modify";
-	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private static final String EVENT_SQL_CREATE= "create table " + EVENT_TABLE_NAME +
 	" ( eid integer primary key autoincrement,"
@@ -88,13 +88,6 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	public long insert(Mode entity) {
 		SQLiteDatabase db = getWritableDatabase();
 		Cursor c = db.rawQuery("select * from " + MODE_TABLE_NAME + " ;", null);
-		if(c.getCount() == 0){
-			ContentValues values = new ContentValues();
-			values.put("name", "currentMode");
-			values.put("volume", 1);
-			values.put("vibrate", 0);
-			db.insert(MODE_TABLE_NAME, null, values);
-		}
 		ContentValues values = new ContentValues();
 		values.put("name", entity.getName());
 		values.put("volume", entity.getVolume());

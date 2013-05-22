@@ -13,7 +13,10 @@ public class ModifyReceiver extends BroadcastReceiver{
 	@Override
     public void onReceive(Context context, Intent intent) {
 		
-		Log.d(tag, intent.getAction());
+		Log.i(tag, "ModifyReceiver=======================================================");
+		Log.i(tag, "MID" + intent.getIntExtra("MID", -1));
+		Log.i(tag, "VOLUME="+intent.getIntExtra("VOLUME", -1)+"  VIBRATE="+intent.getIntExtra("VIBRATE", -1));
+		
 		
 		AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 		
@@ -30,10 +33,9 @@ public class ModifyReceiver extends BroadcastReceiver{
 		
 	}
 	
-	
     protected void ringAndVibrate(AudioManager audio) {
     	audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
+        audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);     
         audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_NOTIFICATION, AudioManager.VIBRATE_SETTING_ON);
     }
   
