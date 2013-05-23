@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -40,11 +41,10 @@ public class Main extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
+		setContentView(R.layout.activity_main);	
 		String tag = "Main";
-		
 		
 		menuButton = (ImageButton) this.findViewById(R.id.Menu);
 		datePickButton = (Button) this.findViewById(R.id.datePick);
@@ -55,9 +55,6 @@ public class Main extends Activity {
 				,new String[]{"eid", "title", "beginTime", "endTime"}, new int []{R.id.event_id, R.id.event_title, 
 				R.id.event_begin_time, R.id.event_end_time});
 		eventList.setAdapter(adapter);
-		
-		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item);
-		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item); 
 		
 		List<Mode> modes = new ArrayList<Mode>();
 	    modes = helper.getAllModes();
@@ -87,15 +84,6 @@ public class Main extends Activity {
 		curDatePls60sDate = new java.sql.Date(curDatePls60sDate2.getTime());
 		
 		curDateString = formatter.format(curDate);
-		Log.i(tag, curDateString);
-		Event e = new Event("hehe", "hehe", "hehe", curDate, curDate, curDatePls50sDate, curDatePls60sDate);
-		
-		helper.insert(e);
-		Mode m = new Mode("Mode", 0, 0);
-		helper.insert(e, m);
-
-		// eventList.setAdapter(adapter);
-		updateList();
 		
 		//闹钟管理
 		diary_alarm  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
@@ -103,6 +91,8 @@ public class Main extends Activity {
 		PendingIntent senderPI = PendingIntent.getBroadcast(this, 0, intent, 0);
     	diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), //24 * 60 * 60
     			5 * 100 * 1000, senderPI);
+    	
+    	updateList();
 		 
 	}
 	
@@ -110,7 +100,6 @@ public class Main extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-			// TODO 自动生成的方法存根
 			Intent intent=new Intent();
     		intent.setClass(Main.this,AddEvent.class);
     		startActivity(intent);

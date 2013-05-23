@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -61,6 +62,7 @@ public class AddEvent extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_event);
 		
@@ -331,7 +333,9 @@ public class AddEvent extends Activity {
 				endDate = new Date(dateFormat.parse(toDatePickerButton.getText() + " " + toTimePickerButton.getText() + ":00").getTime());
 				Event newEvent = new Event(eventTitle, eventPlace, eventContent, now, now, beginDate, endDate);
 				// if is today's event, add pending intent
+				Mode mode = dbHelper.getModeById(modifyMode);
 				dbHelper.insert(newEvent);
+				dbHelper.insert(newEvent, mode);
 				Toast.makeText(AddEvent.this, "事件"+ eventTitle +"已经添加~\\(^o^)/~", Toast.LENGTH_SHORT).show();
 				Intent intent=new Intent();
 	    		intent.setClass(AddEvent.this,Main.class);
