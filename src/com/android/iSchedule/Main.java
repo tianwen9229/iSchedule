@@ -112,9 +112,9 @@ public class Main extends Activity {
 		public void onClick(View v) {
 			// TODO 自动生成的方法存根
 			Intent intent=new Intent();
-    		intent.setClass
-    		(Main.this,AddEvent.class);
+    		intent.setClass(Main.this,AddEvent.class);
     		startActivity(intent);
+    		finish();
 		}
 	};
 	@Override

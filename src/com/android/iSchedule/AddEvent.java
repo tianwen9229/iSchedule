@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -266,6 +267,9 @@ public class AddEvent extends Activity {
 		
 		@Override
 		public void onClick(View v) {
+			Intent intent=new Intent();
+    		intent.setClass(AddEvent.this,Main.class);
+    		startActivity(intent);
 			finish();
 		}
 	};
@@ -314,6 +318,14 @@ public class AddEvent extends Activity {
 			
 			modifyMode = 1 + Integer.parseInt(modifyResultText.getText().toString());
 			
+			String beginString = fromDatePickerButton.getText() + " " + fromTimePickerButton.getText() + ":00";
+			String endString = toDatePickerButton.getText() + " " + toTimePickerButton.getText() + ":00";
+			int result = beginString.compareTo(endString);
+			if(result > 0){
+				Toast.makeText(AddEvent.this, "别逗了，开始怎么会在结束后呢o(╯□╰)o\n快快去修改吧~~", Toast.LENGTH_SHORT).show();
+				return;
+			}
+			
 			try {
 				beginDate = new Date(dateFormat.parse(fromDatePickerButton.getText() + " " + fromTimePickerButton.getText() + ":00").getTime());
 				endDate = new Date(dateFormat.parse(toDatePickerButton.getText() + " " + toTimePickerButton.getText() + ":00").getTime());
@@ -321,10 +333,13 @@ public class AddEvent extends Activity {
 				// if is today's event, add pending intent
 				dbHelper.insert(newEvent);
 				Toast.makeText(AddEvent.this, "事件"+ eventTitle +"已经添加~\\(^o^)/~", Toast.LENGTH_SHORT).show();
+				Intent intent=new Intent();
+	    		intent.setClass(AddEvent.this,Main.class);
+	    		startActivity(intent);
+				finish();
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-
 		}
 	};
 }
