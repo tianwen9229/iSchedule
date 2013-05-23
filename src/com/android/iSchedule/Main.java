@@ -59,29 +59,22 @@ public class Main extends Activity {
 		List<Mode> modes = new ArrayList<Mode>();
 	    modes = helper.getAllModes();
 	    if(modes.size() == 0){
-	    	Mode mode_1 = new Mode("currentMode", 1, 0);
-	    	Mode mode_2 = new Mode("振动响铃", 1, 1);
+	    	Mode curMode = new Mode("curMode", 1, 0);
+	    	Mode mode_1 = new Mode("振动响铃", 1, 1);
+	    	Mode mode_2 = new Mode("响铃", 1, 0);
 	    	Mode mode_3 = new Mode("振动", 0, 1);
+	    	Mode mode_4 = new Mode("静音", 0, 0);
+	    	helper.insert(curMode);
 	    	helper.insert(mode_1);
 	    	helper.insert(mode_2);
 	    	helper.insert(mode_3);
+	    	helper.insert(mode_4);
 	    }
 		datePickButton.setText(curDateString);
 		
 		addEventButton.setOnClickListener(addOnClick);
 		
 		
-		Date curDatePls50sDate = curDate;
-		java.util.Date curDate2 = new java.util.Date(curDate.getTime());
-		java.util.Date curDatePls50sDate2 = curDate2;
-		curDatePls50sDate2.setSeconds(curDate2.getSeconds() + 50);
-		curDatePls50sDate = new java.sql.Date(curDatePls50sDate2.getTime());
-		
-		Date curDatePls60sDate = curDate;
-		java.util.Date curDate3 = new java.util.Date(curDate.getTime());
-		java.util.Date curDatePls60sDate2 = curDate3;
-		curDatePls60sDate2.setSeconds(curDate3.getSeconds() + 60);
-		curDatePls60sDate = new java.sql.Date(curDatePls60sDate2.getTime());
 		
 		curDateString = formatter.format(curDate);
 		
