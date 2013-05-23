@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Test;
+
 import android.os.Bundle;
 import android.R.integer;
 import android.app.Activity;
@@ -28,6 +30,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class AddEvent extends Activity {
 	
@@ -41,6 +44,7 @@ public class AddEvent extends Activity {
 	public Button toTimePickerButton;
 	public Spinner frequencySpinner;
 	public TextView frequencyResultText;
+	public EditText frequencyTimeEditText;
 	public EditText eventPlaceEditText;
 	public Spinner modifyModeSpinner;
 	public TextView modifyResultText;
@@ -58,6 +62,14 @@ public class AddEvent extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_event);
+		
+		frequencyTimeEditText = (EditText) this.findViewById(R.id.editRepeatTime);
+		eventTitleEditText = (EditText) this.findViewById(R.id.editTitle);
+		eventContentEditText = (EditText)this.findViewById(R.id.editContent);
+		eventPlaceEditText = (EditText) this.findViewById(R.id.editPlace);
+		frequencyResultText = (TextView) this.findViewById(R.id.frequencyResult);
+		modifyResultText = (TextView)this.findViewById(R.id.modifyResult);
+		
 		
 		// set Date and time
 		fromDatePickerButton = (Button)this.findViewById(R.id.fromDatePicker);
@@ -107,7 +119,15 @@ public class AddEvent extends Activity {
 		modifyModeSpinner.setAdapter(modifySpinnerAdapter);
 		modifyModeSpinner.setOnItemSelectedListener(modifySpinnerOnItemSelect);
 		
+
 		
+		//back button
+		backButton = (Button) this.findViewById(R.id.back);
+		backButton.setOnClickListener(backButtonOnClick);
+		
+		//done button
+		doneButton = (Button) this.findViewById(R.id.done);
+		doneButton.setOnClickListener(doneButtonOnClick);
 	}
 	
 	@Override
@@ -240,5 +260,71 @@ public class AddEvent extends Activity {
 
 		@Override
 		public void onNothingSelected(AdapterView<?> arg0) {}
+	};
+	
+	public OnClickListener backButtonOnClick = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			finish();
+		}
+	};
+	
+	public OnClickListener doneButtonOnClick = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			String eventTitle;
+			String eventContent;
+			String eventPlace;
+			int frequency;
+			int frequencyTime;
+			Date beginDate;
+			Date endDate;
+			Date now = new Date(System.currentTimeMillis());
+			int modifyMode;
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+			
+			if(eventTitleEditText.getText().toString().equals("")){
+				Toast.makeText(AddEvent.this, "还没填事件主题哦~~", Toast.LENGTH_SHORT).show();
+				eventTitleEditText.requestFocus();
+				return;
+			}
+			else {
+				eventTitle = eventTitleEditText.getText().toString();
+			}
+			
+			eventContent = eventContentEditText.getText().toString();
+			eventPlace = eventPlaceEditText.getText().toString();
+			frequency = Integer.parseInt(frequencyResultText.getText().toString());
+			
+			if(frequency != 0 && frequencyTimeEditText.getText().toString().equals("")){
+				Toast.makeText(AddEvent.this, "还没填重复次数哦~~", Toast.LENGTH_SHORT).show();
+				frequencyTimeEditText.requestFocus();
+				return;
+			}
+			
+			else if (frequency == 0) {
+				frequencyTime = 0;
+			}
+			else {
+				frequencyTime = Integer.parseInt(frequencyTimeEditText.getText().toString());
+			}
+			
+			modifyMode = 1 + Integer.parseInt(modifyResultText.getText().toString());
+			
+			try {
+				beginDate = new Date(dateFormat.parse(fromDatePickerButton.getText() + " " + fromTimePickerButton.getText() + ":00").getTime());
+				endDate = new Date(dateFormat.parse(toDatePickerButton.getText() + " " + toTimePickerButton.getText() + ":00").getTime());
+				Event newEvent = new Event(eventTitle, eventPlace, eventContent, now, now, beginDate, endDate);
+				// if is today's event, add pending intent
+				dbHelper.insert(newEvent);
+				Toast.makeText(AddEvent.this, "事件"+ eventTitle +"已经添加~\\(^o^)/~", Toast.LENGTH_SHORT).show();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+		}
 	};
 }
