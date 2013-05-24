@@ -1,28 +1,23 @@
 package com.android.iSchedule;
 
-import java.security.PublicKey;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
-
-import junit.framework.Test;
 
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.R.integer;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.text.Layout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -33,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -48,13 +44,14 @@ public class AddEvent extends Activity {
 	public Button fromTimePickerButton;
 	public Button toDatePickerButton;
 	public Button toTimePickerButton;
+	public Button endDatePickerButton;
 	public Spinner frequencySpinner;
 	public TextView frequencyResultText;
-	public EditText frequencyTimeEditText;
 	public EditText eventPlaceEditText;
 	public Spinner modifyModeSpinner;
 	public TextView modifyResultText;
-	
+	public LinearLayout frequencyEndDateLayout;
+	public TextView frequencyEndTextView;
 	public iScheduleDB dbHelper = new iScheduleDB(this);
 	
 	public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日");
@@ -70,14 +67,15 @@ public class AddEvent extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_event);
 		
-		frequencyTimeEditText = (EditText) this.findViewById(R.id.editRepeatTime);
 		eventTitleEditText = (EditText) this.findViewById(R.id.editTitle);
 		eventContentEditText = (EditText)this.findViewById(R.id.editContent);
 		eventPlaceEditText = (EditText) this.findViewById(R.id.editPlace);
 		frequencyResultText = (TextView) this.findViewById(R.id.frequencyResult);
 		modifyResultText = (TextView)this.findViewById(R.id.modifyResult);
-		
-		
+		frequencyEndTextView = (TextView) this.findViewById(R.id.repeatTime);
+		frequencyEndDateLayout = (LinearLayout) this.findViewById(R.id.frequencyEndDate);
+		frequencyEndDateLayout.setVisibility(8);
+		frequencyEndTextView.setVisibility(8);
 		// set Date and time
 		fromDatePickerButton = (Button)this.findViewById(R.id.fromDatePicker);
 		fromDatePickerButton.setText(dateFormat.format(curDate));
@@ -91,6 +89,15 @@ public class AddEvent extends Activity {
 		toTimePickerButton = (Button)this.findViewById(R.id.toTimePicker);
 		toTimePickerButton.setText(timeFormat.format(curDate));
 		toTimePickerButton.setOnClickListener(toTimeOnClick);
+		
+		
+		Calendar newCalendar = new GregorianCalendar();
+		newCalendar.setTime(curDate);
+		newCalendar.add(Calendar.DATE, 1);
+		Date nextDate = new Date(newCalendar.getTime().getTime());
+		endDatePickerButton = (Button)this.findViewById(R.id.endDatePicker);
+		endDatePickerButton.setText(dateFormat.format(nextDate));
+		endDatePickerButton.setOnClickListener(endDateOnClick);
 		
 		//set frequency spinner
 		frequencyResultText = (TextView)this.findViewById(R.id.frequencyResult);
@@ -245,12 +252,44 @@ public class AddEvent extends Activity {
 		}
 	};
 	
+	DatePickerDialog.OnDateSetListener endDatePicker = new DatePickerDialog.OnDateSetListener(){ 
+
+		@Override 
+		public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth) { 
+			pickDate.setYear(year - 1900);
+			pickDate.setMonth(monthOfYear);
+			pickDate.setDate(dayOfMonth);
+			endDatePickerButton.setText(dateFormat.format(pickDate));
+		}
+	}; 
+	
+	public OnClickListener endDateOnClick = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			try {
+				Date date = new Date(dateFormat.parse(endDatePickerButton.getText()+" 00:00:00").getTime());
+				new DatePickerDialog(AddEvent.this, endDatePicker,date.getYear() + 1900, date.getMonth(), date.getDate()).show();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+	};
+	
 	public OnItemSelectedListener frequencySpinnerOnItemSelect = new OnItemSelectedListener() {
 
 		@Override
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			frequencyResultText.setText(Integer.toString(arg2));
+			if(arg2 != 0){
+				frequencyEndDateLayout.setVisibility(0);
+				frequencyEndTextView.setVisibility(0);
+			}
+			else {
+				frequencyEndDateLayout.setVisibility(8);
+				frequencyEndTextView.setVisibility(8);
+			}
 		}
 
 		@Override
@@ -309,18 +348,6 @@ public class AddEvent extends Activity {
 			eventPlace = eventPlaceEditText.getText().toString();
 			frequency = Integer.parseInt(frequencyResultText.getText().toString());
 			
-			if(frequency != 0 && frequencyTimeEditText.getText().toString().equals("")){
-				Toast.makeText(AddEvent.this, "还没填重复次数哦~~", Toast.LENGTH_SHORT).show();
-				frequencyTimeEditText.requestFocus();
-				return;
-			}
-			
-			else if (frequency == 0) {
-				frequencyTime = 0;
-			}
-			else {
-				frequencyTime = Integer.parseInt(frequencyTimeEditText.getText().toString());
-			}
 			
 			modifyMode = 2 + Integer.parseInt(modifyResultText.getText().toString());
 			
@@ -331,67 +358,292 @@ public class AddEvent extends Activity {
 				Toast.makeText(AddEvent.this, "别逗了，开始怎么会在结束后呢o(╯□╰)o\n快快去修改吧~~", Toast.LENGTH_SHORT).show();
 				return;
 			}
+			String frequencyEndString = endDatePickerButton.getText() + " 00:00:00";
+			result = endString.compareTo(frequencyEndString);
+			if(result > 0){
+				Toast.makeText(AddEvent.this, "别逗了，重复结束时间怎么会在结束前呢(╯□╰)\n快快去修改吧~~", Toast.LENGTH_SHORT).show();
+				return;
+			}
 			
 			try {
+				Mode mode = dbHelper.getModeById(modifyMode);
 				beginDate = new Date(dateFormat.parse(fromDatePickerButton.getText() + " " + fromTimePickerButton.getText() + ":00").getTime());
 				endDate = new Date(dateFormat.parse(toDatePickerButton.getText() + " " + toTimePickerButton.getText() + ":00").getTime());
-				Event newEvent = new Event(eventTitle, eventPlace, eventContent, now, now, beginDate, endDate);
+				Date frequencyEndDate = new Date(dateFormat.parse(endDatePickerButton.getText() + " 00:00:00").getTime());
+				
+				Calendar curBeginCalendar = new GregorianCalendar();
+				curBeginCalendar.setTime(beginDate);
+				Calendar curEndCalendar = new GregorianCalendar();
+				curEndCalendar.setTime(endDate);
+				
+				if(frequency == 1){
+					Date nextDate = new Date(curBeginCalendar.getTime().getTime());
+					while(! nextDate.after(frequencyEndDate)){
+						beginDate.setTime(curBeginCalendar.getTime().getTime());
+						endDate.setTime(curEndCalendar.getTime().getTime());
+						Event newEvent = new Event(eventTitle, eventPlace, eventContent, now, now, beginDate, endDate);
+						dbHelper.insert(newEvent);
+						dbHelper.insert(newEvent, mode);
 
-				Mode mode = dbHelper.getModeById(modifyMode);
-				dbHelper.insert(newEvent);
-				dbHelper.insert(newEvent, mode);
-				
-				//若新增的闹钟与今天相关，立刻设置闹钟
-				AudioManager audio = (AudioManager) AddEvent.this.getSystemService(Context.AUDIO_SERVICE);
-				AlarmManager aManager;
-				aManager  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-				Mode curMode = dbHelper.getModeById(1);
-				
-				if(newEvent.getStartTime().getDay() == curDate.getDay()){
-					Log.i("AddEvent", "modifying=======================================================");
-					Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2));
-					Log.i("AddEvent", format.format(newEvent.getStartTime()));
-					//保存当前的情景模式
-					if(audio.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
-						curMode.setVolume(1);
+						//若新增的闹钟与今天相关，立刻设置闹钟
+						AudioManager audio = (AudioManager) AddEvent.this.getSystemService(Context.AUDIO_SERVICE);
+						AlarmManager aManager;
+						aManager  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+						Mode curMode = dbHelper.getModeById(1);
+						
+						if(newEvent.getStartTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "modifying=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2));
+							Log.i("AddEvent", format.format(newEvent.getStartTime()));
+							//保存当前的情景模式
+							if(audio.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
+								curMode.setVolume(1);
+							}
+							else{
+								curMode.setVolume(0);
+							}
+							if(audio.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER) == AudioManager.VIBRATE_SETTING_ON){
+								curMode.setVibrate(1);
+							}
+							else{
+								curMode.setVibrate(0);
+							}				
+							dbHelper.updateModeById(curMode);
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class);
+							eIntent.putExtra("VOLUME", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getStartTime().getTime(), ePendingIntent);
+						}
+						if(newEvent.getEndTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "resuming=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2 + 1));
+							Log.i("AddEvent", format.format(newEvent.getEndTime()));
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class); 
+
+							eIntent.putExtra("VOLUME", dbHelper.getModeById(1).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeById(1).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2 + 1);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2 + 1), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getEndTime().getTime(), ePendingIntent);
+						}	
+						
+						
+						curBeginCalendar.add(Calendar.DATE, 1);	
+						curEndCalendar.add(Calendar.DATE, 1);
+						nextDate.setTime(curBeginCalendar.getTime().getTime());
 					}
-					else{
-						curMode.setVolume(0);
-					}
-					if(audio.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER) == AudioManager.VIBRATE_SETTING_ON){
-						curMode.setVibrate(1);
-					}
-					else{
-						curMode.setVibrate(0);
-					}				
-					dbHelper.updateModeById(curMode);
-					
-					Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class);
-					eIntent.putExtra("VOLUME", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVolume());
-					eIntent.putExtra("VIBRATE", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVibrate());
-					eIntent.putExtra("MID", (int)newEvent.getEventId() * 2);
-					
-					PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2), eIntent, 0);
-					
-					aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getStartTime().getTime(), ePendingIntent);
+
 				}
-				if(newEvent.getEndTime().getDay() == curDate.getDay()){
-					Log.i("AddEvent", "resuming=======================================================");
-					Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2 + 1));
-					Log.i("AddEvent", format.format(newEvent.getEndTime()));
-					
-					Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class); 
-
-					eIntent.putExtra("VOLUME", dbHelper.getModeById(1).getVolume());
-					eIntent.putExtra("VIBRATE", dbHelper.getModeById(1).getVibrate());
-					eIntent.putExtra("MID", (int)newEvent.getEventId() * 2 + 1);
-					
-					PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2 + 1), eIntent, 0);
-					
-					aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getEndTime().getTime(), ePendingIntent);
-				}	
 				
+				else if(frequency == 2){
+					Date nextDate = new Date(curBeginCalendar.getTime().getTime());
+					while(! nextDate.after(frequencyEndDate)){
+						beginDate.setTime(curBeginCalendar.getTime().getTime());
+						endDate.setTime(curEndCalendar.getTime().getTime());
+						Event newEvent = new Event(eventTitle, eventPlace, eventContent, now, now, beginDate, endDate);
+						dbHelper.insert(newEvent);
+						dbHelper.insert(newEvent, mode);
 
+						//若新增的闹钟与今天相关，立刻设置闹钟
+						AudioManager audio = (AudioManager) AddEvent.this.getSystemService(Context.AUDIO_SERVICE);
+						AlarmManager aManager;
+						aManager  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+						Mode curMode = dbHelper.getModeById(1);
+						
+						if(newEvent.getStartTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "modifying=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2));
+							Log.i("AddEvent", format.format(newEvent.getStartTime()));
+							//保存当前的情景模式
+							if(audio.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
+								curMode.setVolume(1);
+							}
+							else{
+								curMode.setVolume(0);
+							}
+							if(audio.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER) == AudioManager.VIBRATE_SETTING_ON){
+								curMode.setVibrate(1);
+							}
+							else{
+								curMode.setVibrate(0);
+							}				
+							dbHelper.updateModeById(curMode);
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class);
+							eIntent.putExtra("VOLUME", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getStartTime().getTime(), ePendingIntent);
+						}
+						if(newEvent.getEndTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "resuming=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2 + 1));
+							Log.i("AddEvent", format.format(newEvent.getEndTime()));
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class); 
+
+							eIntent.putExtra("VOLUME", dbHelper.getModeById(1).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeById(1).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2 + 1);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2 + 1), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getEndTime().getTime(), ePendingIntent);
+						}	
+						
+						
+						curBeginCalendar.add(Calendar.DATE, 7);	
+						curEndCalendar.add(Calendar.DATE, 7);
+						nextDate.setTime(curBeginCalendar.getTime().getTime());
+					}
+				}
+				
+				else if(frequency == 3){
+					Date nextDate = new Date(curBeginCalendar.getTime().getTime());
+					while(! nextDate.after(frequencyEndDate)){
+						beginDate.setTime(curBeginCalendar.getTime().getTime());
+						endDate.setTime(curEndCalendar.getTime().getTime());
+						Event newEvent = new Event(eventTitle, eventPlace, eventContent, now, now, beginDate, endDate);
+						dbHelper.insert(newEvent);
+						dbHelper.insert(newEvent, mode);
+
+						//若新增的闹钟与今天相关，立刻设置闹钟
+						AudioManager audio = (AudioManager) AddEvent.this.getSystemService(Context.AUDIO_SERVICE);
+						AlarmManager aManager;
+						aManager  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+						Mode curMode = dbHelper.getModeById(1);
+						
+						if(newEvent.getStartTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "modifying=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2));
+							Log.i("AddEvent", format.format(newEvent.getStartTime()));
+							//保存当前的情景模式
+							if(audio.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
+								curMode.setVolume(1);
+							}
+							else{
+								curMode.setVolume(0);
+							}
+							if(audio.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER) == AudioManager.VIBRATE_SETTING_ON){
+								curMode.setVibrate(1);
+							}
+							else{
+								curMode.setVibrate(0);
+							}				
+							dbHelper.updateModeById(curMode);
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class);
+							eIntent.putExtra("VOLUME", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getStartTime().getTime(), ePendingIntent);
+						}
+						if(newEvent.getEndTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "resuming=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2 + 1));
+							Log.i("AddEvent", format.format(newEvent.getEndTime()));
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class); 
+
+							eIntent.putExtra("VOLUME", dbHelper.getModeById(1).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeById(1).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2 + 1);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2 + 1), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getEndTime().getTime(), ePendingIntent);
+						}	
+						
+						
+						curBeginCalendar.add(Calendar.MONTH, 1);	
+						curEndCalendar.add(Calendar.MONTH, 1);
+						nextDate.setTime(curBeginCalendar.getTime().getTime());
+					}
+				}
+
+				else if(frequency == 4){
+					Date nextDate = new Date(curBeginCalendar.getTime().getTime());
+					while(! nextDate.after(frequencyEndDate)){
+						beginDate.setTime(curBeginCalendar.getTime().getTime());
+						endDate.setTime(curEndCalendar.getTime().getTime());
+						Event newEvent = new Event(eventTitle, eventPlace, eventContent, now, now, beginDate, endDate);
+						dbHelper.insert(newEvent);
+						dbHelper.insert(newEvent, mode);
+
+						//若新增的闹钟与今天相关，立刻设置闹钟
+						AudioManager audio = (AudioManager) AddEvent.this.getSystemService(Context.AUDIO_SERVICE);
+						AlarmManager aManager;
+						aManager  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+						Mode curMode = dbHelper.getModeById(1);
+						
+						if(newEvent.getStartTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "modifying=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2));
+							Log.i("AddEvent", format.format(newEvent.getStartTime()));
+							//保存当前的情景模式
+							if(audio.getRingerMode() == AudioManager.RINGER_MODE_NORMAL){
+								curMode.setVolume(1);
+							}
+							else{
+								curMode.setVolume(0);
+							}
+							if(audio.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER) == AudioManager.VIBRATE_SETTING_ON){
+								curMode.setVibrate(1);
+							}
+							else{
+								curMode.setVibrate(0);
+							}				
+							dbHelper.updateModeById(curMode);
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class);
+							eIntent.putExtra("VOLUME", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeByEventId((int) newEvent.getEventId()).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getStartTime().getTime(), ePendingIntent);
+						}
+						if(newEvent.getEndTime().getDay() == curDate.getDay()){
+							Log.i("AddEvent", "resuming=======================================================");
+							Log.i("AddEvent", "MID=" + (int)(newEvent.getEventId() * 2 + 1));
+							Log.i("AddEvent", format.format(newEvent.getEndTime()));
+							
+							Intent eIntent = new Intent(AddEvent.this, ModifyReceiver.class); 
+
+							eIntent.putExtra("VOLUME", dbHelper.getModeById(1).getVolume());
+							eIntent.putExtra("VIBRATE", dbHelper.getModeById(1).getVibrate());
+							eIntent.putExtra("MID", (int)newEvent.getEventId() * 2 + 1);
+							
+							PendingIntent ePendingIntent = PendingIntent.getBroadcast(AddEvent.this, (int)(newEvent.getEventId() * 2 + 1), eIntent, 0);
+							
+							aManager.set(AlarmManager.RTC_WAKEUP, newEvent.getEndTime().getTime(), ePendingIntent);
+						}	
+						
+						
+						curBeginCalendar.add(Calendar.YEAR, 1);	
+						curEndCalendar.add(Calendar.YEAR, 1);
+						nextDate.setTime(curBeginCalendar.getTime().getTime());
+					}
+				}
+				
+				else {
+					Toast.makeText(AddEvent.this, "ERROR!!!", Toast.LENGTH_LONG).show();
+				}
 				
 				Toast.makeText(AddEvent.this, "事件"+ eventTitle +"已经添加~\\(^o^)/~", Toast.LENGTH_SHORT).show();
 				Intent intent=new Intent();
