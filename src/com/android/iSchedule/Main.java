@@ -9,24 +9,28 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
-import android.provider.Contacts.Intents.Insert;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 public class Main extends Activity {
     //
@@ -59,6 +63,7 @@ public class Main extends Activity {
 				,new String[]{"eid", "title", "beginTime", "endTime"}, new int []{R.id.event_id, R.id.event_title, 
 				R.id.event_begin_time, R.id.event_end_time});
 		eventList.setAdapter(adapter);
+		eventList.setOnItemLongClickListener(longClick);
     	updateList(curDate);
 		List<Mode> modes = new ArrayList<Mode>();
 	    modes = helper.getAllModes();
@@ -90,13 +95,22 @@ public class Main extends Activity {
 	 
 	}
 	
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+	public OnItemLongClickListener longClick = new OnItemLongClickListener() {
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+				int arg2, long arg3) {
+			 try {
+				Date date = new Date(dateFormat.parse(datePickButton.getText() + " 00:00:00").getTime());
+				List<Event> list = new ArrayList<Event>();
+				list = helper.getEventByDate(date);
+				delEvent(Main.this, (int)list.get(arg2).getEventId());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+	};
 	public OnClickListener menuOnClick = new OnClickListener()	
 	{
 		@Override
@@ -105,30 +119,7 @@ public class Main extends Activity {
 		}
 	};
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		if(item.getItemId() == R.id.add_event)
-			{		
-			Intent intent=new Intent();
-    		intent.setClass(Main.this,AddEvent.class);
-    		startActivity(intent);
-    		finish();
-			}
-		if(item.getItemId() == R.id.today)
-		{
-		    	;
-		}
-		if(item.getItemId() == R.id.action_settings)
-			//ToDo;
-		if(item.getItemId() == R.id.feedback)
-			//ToDo;
-		if(item.getItemId() == R.id.about)
-			//ToDo;
-		if(item.getItemId() == R.id.exit)
-			finish();
-		return true;
-	}
+
 
 	public OnClickListener addOnClick = new OnClickListener() {
 		
@@ -198,6 +189,72 @@ public class Main extends Activity {
 			}
 		}
 	};
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		if(item.getItemId() == R.id.add_event)
+			{		
+			Intent intent=new Intent();
+    		intent.setClass(Main.this,AddEvent.class);
+    		startActivity(intent);
+    		finish();
+			}
+		if(item.getItemId() == R.id.today)
+		{
+		    	;
+		}
+		if(item.getItemId() == R.id.action_settings)
+			//ToDo;
+		if(item.getItemId() == R.id.feedback)
+			//ToDo;
+		if(item.getItemId() == R.id.about)
+			//ToDo;
+		if(item.getItemId() == R.id.exit)
+			finish();
+		return true;
+	}
+	
+	public void delEvent(Context context, final int eventId)  {
+		final iScheduleDB dbHelper = new iScheduleDB(context);
+		final Event event;
+		String[] item = new String[] {"删除这个活动主题一致的所有活动","仅删除当前活动" };
+
+		try {
+			event = dbHelper.getEventById(eventId);
+			final Date date = new Date(dateFormat.parse(datePickButton.getText() + " 00:00:00").getTime());
+			DialogInterface.OnClickListener onclick = new  DialogInterface.OnClickListener() {
+	            
+				public void onClick(DialogInterface dialog, int which) {
+					
+					if(which == 0){
+						String title = event.getTitle();
+						dbHelper.deleteEventByTitle(title);
+					}
+					else if(which == 1){
+						dbHelper.deleteEventById(eventId);
+					}
+					
+					updateList(date);
+					dialog.dismiss();
+				}
+			};
+			
+			new AlertDialog.Builder(context).setTitle("真的要删除这个活动？")
+			.setIcon(android.R.drawable.ic_dialog_info)                
+			.setSingleChoiceItems(item, 0, onclick).setNegativeButton("取消", null).show();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+	}
 	
 }
 
