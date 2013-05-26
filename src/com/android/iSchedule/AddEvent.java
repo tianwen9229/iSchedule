@@ -53,6 +53,7 @@ public class AddEvent extends Activity {
 	public LinearLayout frequencyEndDateLayout;
 	public TextView frequencyEndTextView;
 	public iScheduleDB dbHelper = new iScheduleDB(this);
+	public TextView addEventTextView;
 	
 	public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日");
 	public SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -74,6 +75,7 @@ public class AddEvent extends Activity {
 		editOrNew = bundle.getInt("editOrNew");
 		eventId = bundle.getInt("eventId");
 		
+		addEventTextView = (TextView)this.findViewById(R.id.add_event_text);
 		eventTitleEditText = (EditText) this.findViewById(R.id.editTitle);
 		eventContentEditText = (EditText)this.findViewById(R.id.editContent);
 		eventPlaceEditText = (EditText) this.findViewById(R.id.editPlace);
@@ -127,17 +129,14 @@ public class AddEvent extends Activity {
 		frequencySpinner.setAdapter(frequencySpinnerAdapter);
 
 		frequencySpinner.setOnItemSelectedListener(frequencySpinnerOnItemSelect);
-		Log.d("test", "pause4");
 		//set modify spinner
 		modifyModeSpinner = (Spinner) this.findViewById(R.id.modifyModeSpinner);
 		modifyResultText = (TextView) this.findViewById(R.id.modifyResult);
-		Log.d("test", "pause5");
 		List<Mode> list = dbHelper.getAllModes();
 		List<String> modeName = new ArrayList<String>();
 		for(int i = 1; i < list.size(); i++){
 			modeName.add(list.get(i).getName());
 		}
-		Log.d("test", Integer.toString(list.size()));
 		ArrayAdapter<String> modifySpinnerAdapter = new ArrayAdapter<String>(this,
 			    android.R.layout.simple_spinner_item, modeName);
 		modifyModeSpinner.setAdapter(modifySpinnerAdapter);
@@ -149,6 +148,7 @@ public class AddEvent extends Activity {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+			addEventTextView.setText("编辑日程");
 			eventTitleEditText.setText(event.getTitle());
 			eventContentEditText.setText(event.getContent());
 			fromDatePickerButton.setText(dateFormat.format(event.getStartTime()));
