@@ -277,7 +277,7 @@ public class Main extends Activity {
 			dialog.show();
 		};
 		if(item.getItemId() == R.id.exit)
-			Main.this.finish();
+			finish();
 		return true;
 	}
 	

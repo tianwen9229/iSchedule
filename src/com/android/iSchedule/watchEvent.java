@@ -111,6 +111,7 @@ public class watchEvent extends Activity{
 					intent.putExtras(bundle);
 					intent.setClass(watchEvent.this, AddEvent.class);
 					startActivity(intent);
+					finish();
 				}
 			};
 				
@@ -144,6 +145,7 @@ public class watchEvent extends Activity{
 					intent.putExtras(bundle);
 					intent.setClass(watchEvent.this, AddEvent.class);
 					startActivity(intent);
+					finish();
 				}
 			};
 				
