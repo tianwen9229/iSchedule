@@ -8,30 +8,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 
 public class Main extends Activity {
     //
@@ -92,8 +92,7 @@ public class Main extends Activity {
 		diary_alarm  = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(this, DiaryReceiver.class);
 		PendingIntent senderPI = PendingIntent.getBroadcast(this, 0, intent, 0);
-    	diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), //24 * 60 * 60
-    			5 * 100 * 1000, senderPI);
+    	diary_alarm.setRepeating(AlarmManager.RTC_WAKEUP,  getTime(), 24 * 60 * 60 * 1000, senderPI);
 	 
 	}
 	public OnItemClickListener itemClick = new OnItemClickListener() {
@@ -112,6 +111,7 @@ public class Main extends Activity {
 				intent.putExtras(bundle);
 				intent.setClass(Main.this, watchEvent.class);
 				startActivity(intent);
+				finish();
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}	
@@ -231,24 +231,53 @@ public class Main extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		if(item.getItemId() == R.id.add_event)
-			{		
-				Intent intent=new Intent();
-				intent.setClass(Main.this,AddEvent.class);
-				startActivity(intent);
-				finish();
-			}
+		{		
+			Intent intent = new Intent();
+			Bundle bundle = new Bundle();
+			bundle.putInt("editOrNew", -1);
+			bundle.putInt("eventId", -1);
+			intent.putExtras(bundle);
+			intent.setClass(Main.this, AddEvent.class);
+			startActivity(intent);
+    		finish();
+		}
 		if(item.getItemId() == R.id.today)
 		{
-		    	;
+			updateList(curDate);
+			datePickButton.setText(dateFormat.format(curDate));
 		}
-		if(item.getItemId() == R.id.action_settings)
-			//ToDo;
 		if(item.getItemId() == R.id.feedback)
-			//ToDo;
+		{
+			Dialog dialog = new AlertDialog.Builder(Main.this)
+			.setTitle("反馈")
+			.setMessage("联系我们:\nQQ:1206418761\nEmail:1206418761@qq.com\n电话：18666832643")
+			.setPositiveButton("返回", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.cancel();
+				}
+			}).create();
+			dialog.show();
+		}
 		if(item.getItemId() == R.id.about)
-			//ToDo;
+		{
+			Dialog dialog = new AlertDialog.Builder(Main.this)
+			.setTitle("关于")
+			.setMessage("iSchedule V0.9 Beta")
+			.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.cancel();
+				}
+			}).create();
+			dialog.show();
+		};
 		if(item.getItemId() == R.id.exit)
-			finish();
+			Main.this.finish();
 		return true;
 	}
 	
@@ -263,28 +292,50 @@ public class Main extends Activity {
 			DialogInterface.OnClickListener onclick = new  DialogInterface.OnClickListener() {
 	            
 				public void onClick(DialogInterface dialog, int which) {
-					
+					List<Event> list = new ArrayList<Event>();
+					iScheduleDB helper = new iScheduleDB(Main.this);
 					if(which == 0){
 						String title = event.getTitle();
-						List<Event> list = new ArrayList<Event>();
 						try {
-							list = dbHelper.getEventByTitle(title);
-							Log.d("test", Integer.toString(list.size()));
-							for(int i = 0; i < list.size(); i++){
-								dbHelper.deleteModify(list.get(i));
-							}
+							list = helper.getEventByTitle(title);
 						} catch (ParseException e) {
+							// TODO 自动生成的 catch 块
 							e.printStackTrace();
-						}	
+						}
+						for(int i = 0; i < list.size(); i++){
+							dbHelper.deleteModify(list.get(i));
+							Date eventStartDate = list.get(i).getStartTime();
+							if(eventStartDate.getYear() ==  curDate.getYear() && 
+									eventStartDate.getMonth() == curDate.getMonth() &&
+											eventStartDate.getDate() == curDate.getDate()){
+								if(System.currentTimeMillis() < eventStartDate.getTime()){
+									cancelAlarmByEvent(Main.this, (int)list.get(i).getEventId() * 2);
+									if(list.get(i).getEndTime().getTime() < System.currentTimeMillis()){
+										cancelAlarmByEvent(Main.this, (int)list.get(i).getEventId() * 2 + 1);
+									}	
+								}
+							}
+						}
 						dbHelper.deleteEventByTitle(title);
 					}
 					else if(which == 1){
+						if(event.getStartTime().getYear() ==  curDate.getYear() && 
+								event.getStartTime().getMonth() == curDate.getMonth() &&
+										event.getStartTime().getDate() == curDate.getDate()){
+							if(System.currentTimeMillis() < event.getStartTime().getTime()){
+								cancelAlarmByEvent(Main.this, (int)event.getEventId() * 2);
+								if(event.getEndTime().getDay() == curDate.getDay()){
+									cancelAlarmByEvent(Main.this, (int)event.getEventId() * 2 + 1);
+								}	
+							}
+						}
 						try {
 							dbHelper.deleteModify(dbHelper.getEventById(eventId));
-							dbHelper.deleteEventById(eventId);
 						} catch (ParseException e) {
+							// TODO 自动生成的 catch 块
 							e.printStackTrace();
 						}
+						dbHelper.deleteEventById(eventId);
 					}
 					
 					updateList(date);
@@ -299,6 +350,14 @@ public class Main extends Activity {
 			e.printStackTrace();
 		}
 		
+	}
+	private void cancelAlarmByEvent(Context context, int requestID){
+		Log.i("canceling", "" + requestID);
+		
+		Intent intent = new Intent(context, ModifyReceiver.class);
+		PendingIntent pIntent = PendingIntent.getBroadcast(context, (int)requestID, intent, 0);
+		AlarmManager aManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+		aManager.cancel(pIntent);
 	}
 	
 }

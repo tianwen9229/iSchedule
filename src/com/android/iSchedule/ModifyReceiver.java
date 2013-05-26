@@ -29,13 +29,13 @@ public class ModifyReceiver extends BroadcastReceiver{
 		int VIBRATE = intent.getIntExtra("VIBRATE", -1);
 		
 		int icon = R.drawable.ic_launcher;
-		CharSequence text = "情景模式已经更改为：" + (VOLUME == 1?" 响铃":" 静音") + "&" + (VIBRATE == 1?" 震动":" 不震动") ;
+		CharSequence text = "已经更改为：" + (VOLUME == 1?" 响铃":" 静音") + " & " + (VIBRATE == 1?"震动":"不震动" + "  么么哒~") ;
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon, text, when);
 		
-		Intent nIntent = new Intent();
+		Intent nIntent = new Intent(context, Main.class);
 		PendingIntent nPendingIntent = PendingIntent.getActivity(context, 0, nIntent, 0);
-		notification.setLatestEventInfo(context, "情景模式更改了哦", text, nPendingIntent);
+		notification.setLatestEventInfo(context, "情景模式", text, nPendingIntent);
 		
 		nManager.notify(1, notification);
 		

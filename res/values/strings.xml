@@ -21,4 +21,6 @@
     <string name="About">关于</string>
     <string name="Exit">退出</string>
     <string name="Today">今天</string>
+    <string name="Edit">编辑</string>
+    <string name="Delete">删除</string>
 </resources>
