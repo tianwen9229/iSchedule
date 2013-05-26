@@ -30,6 +30,7 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 public class Main extends Activity {
@@ -63,6 +64,7 @@ public class Main extends Activity {
 				,new String[]{"eid", "title", "beginTime", "endTime"}, new int []{R.id.event_id, R.id.event_title, 
 				R.id.event_begin_time, R.id.event_end_time});
 		eventList.setAdapter(adapter);
+		eventList.setOnItemClickListener(itemClick);
 		eventList.setOnItemLongClickListener(longClick);
     	updateList(curDate);
 		List<Mode> modes = new ArrayList<Mode>();
@@ -94,6 +96,27 @@ public class Main extends Activity {
     			5 * 100 * 1000, senderPI);
 	 
 	}
+	public OnItemClickListener itemClick = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			try {
+				Date date = new Date(dateFormat.parse(datePickButton.getText() + " 00:00:00").getTime());
+				List<Event> list = new ArrayList<Event>();
+				list = helper.getEventByDate(date);
+				
+				Intent intent = new Intent();
+				Bundle bundle = new Bundle();
+				bundle.putInt("eventId", (int)list.get(arg2).getEventId());
+				intent.putExtras(bundle);
+				intent.setClass(Main.this, watchEvent.class);
+				startActivity(intent);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}	
+		}
+	};
 	
 	public OnItemLongClickListener longClick = new OnItemLongClickListener() {
 
@@ -125,9 +148,13 @@ public class Main extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-			Intent intent=new Intent();
-    		intent.setClass(Main.this,AddEvent.class);
-    		startActivity(intent);
+			Intent intent = new Intent();
+			Bundle bundle = new Bundle();
+			bundle.putInt("editOrNew", -1);
+			bundle.putInt("eventId", -1);
+			intent.putExtras(bundle);
+			intent.setClass(Main.this, AddEvent.class);
+			startActivity(intent);
     		finish();
 		}
 	};
@@ -140,6 +167,9 @@ public class Main extends Activity {
 		List<Event> list = new ArrayList<Event>();
 		try {
 			list = helper.getEventByDate(date);
+			if(list.size() == 0)
+				eventList.setBackgroundResource(R.drawable.nothing);
+			else eventList.setBackgroundColor(0);
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
@@ -202,10 +232,10 @@ public class Main extends Activity {
 	{
 		if(item.getItemId() == R.id.add_event)
 			{		
-			Intent intent=new Intent();
-    		intent.setClass(Main.this,AddEvent.class);
-    		startActivity(intent);
-    		finish();
+				Intent intent=new Intent();
+				intent.setClass(Main.this,AddEvent.class);
+				startActivity(intent);
+				finish();
 			}
 		if(item.getItemId() == R.id.today)
 		{
@@ -236,10 +266,25 @@ public class Main extends Activity {
 					
 					if(which == 0){
 						String title = event.getTitle();
+						List<Event> list = new ArrayList<Event>();
+						try {
+							list = dbHelper.getEventByTitle(title);
+							Log.d("test", Integer.toString(list.size()));
+							for(int i = 0; i < list.size(); i++){
+								dbHelper.deleteModify(list.get(i));
+							}
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}	
 						dbHelper.deleteEventByTitle(title);
 					}
 					else if(which == 1){
-						dbHelper.deleteEventById(eventId);
+						try {
+							dbHelper.deleteModify(dbHelper.getEventById(eventId));
+							dbHelper.deleteEventById(eventId);
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
 					}
 					
 					updateList(date);

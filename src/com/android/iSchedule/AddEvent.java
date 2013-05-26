@@ -60,12 +60,19 @@ public class AddEvent extends Activity {
 	
 	public Date pickDate = new Date(System.currentTimeMillis());;
 	public Date curDate = new Date(System.currentTimeMillis());
+	public int editOrNew;
+	public int eventId;
+	public Event event;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_event);
+		
+		Bundle bundle = this.getIntent().getExtras();
+		editOrNew = bundle.getInt("editOrNew");
+		eventId = bundle.getInt("eventId");
 		
 		eventTitleEditText = (EditText) this.findViewById(R.id.editTitle);
 		eventContentEditText = (EditText)this.findViewById(R.id.editContent);
@@ -76,6 +83,7 @@ public class AddEvent extends Activity {
 		frequencyEndDateLayout = (LinearLayout) this.findViewById(R.id.frequencyEndDate);
 		frequencyEndDateLayout.setVisibility(8);
 		frequencyEndTextView.setVisibility(8);
+		Log.d("test", "pause2");
 		// set Date and time
 		fromDatePickerButton = (Button)this.findViewById(R.id.fromDatePicker);
 		fromDatePickerButton.setText(dateFormat.format(curDate));
@@ -98,12 +106,13 @@ public class AddEvent extends Activity {
 		endDatePickerButton = (Button)this.findViewById(R.id.endDatePicker);
 		endDatePickerButton.setText(dateFormat.format(nextDate));
 		endDatePickerButton.setOnClickListener(endDateOnClick);
-		
+
 		//set frequency spinner
 		frequencyResultText = (TextView)this.findViewById(R.id.frequencyResult);
 		frequencySpinner = (Spinner)this.findViewById(R.id.frequencySpinner);
-		String[] week = {"一", "二", "三", "四", "五", "六", "日"};
-		String dayOfWeek = week[curDate.getDay()-1];
+		Log.d("test", "pause3");
+		String[] week = {"日", "一", "二", "三", "四", "五", "六"};
+		String dayOfWeek = week[curDate.getDay()];
 		String dayOfMonth = Integer.toString(curDate.getDate()) + "日";
 		String dayOfYear = Integer.toString(curDate.getMonth()+1)+ "月" + Integer.toString(curDate.getDate()) + "日";
 		String NoRepeat = "一次性活动";
@@ -116,12 +125,13 @@ public class AddEvent extends Activity {
 		ArrayAdapter<String> frequencySpinnerAdapter = new ArrayAdapter<String>(this,
 				    android.R.layout.simple_spinner_item, frequencyItems);
 		frequencySpinner.setAdapter(frequencySpinnerAdapter);
+
 		frequencySpinner.setOnItemSelectedListener(frequencySpinnerOnItemSelect);
-		
+		Log.d("test", "pause4");
 		//set modify spinner
 		modifyModeSpinner = (Spinner) this.findViewById(R.id.modifyModeSpinner);
 		modifyResultText = (TextView) this.findViewById(R.id.modifyResult);
-		
+		Log.d("test", "pause5");
 		List<Mode> list = dbHelper.getAllModes();
 		List<String> modeName = new ArrayList<String>();
 		for(int i = 1; i < list.size(); i++){
@@ -133,7 +143,26 @@ public class AddEvent extends Activity {
 		modifyModeSpinner.setAdapter(modifySpinnerAdapter);
 		modifyModeSpinner.setOnItemSelectedListener(modifySpinnerOnItemSelect);
 		
-
+		if(editOrNew != -1){
+			try {
+				event = dbHelper.getEventById(eventId);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			eventTitleEditText.setText(event.getTitle());
+			eventContentEditText.setText(event.getContent());
+			fromDatePickerButton.setText(dateFormat.format(event.getStartTime()));
+			fromTimePickerButton.setText(timeFormat.format(event.getStartTime()));
+			toDatePickerButton.setText(dateFormat.format(event.getEndTime()));
+			toTimePickerButton.setText(timeFormat.format(event.getEndTime()));
+			
+			eventPlaceEditText.setText(event.getPlace());
+			int modifyMode = (int) dbHelper.getModeByEventId(Integer.valueOf(eventId)).getModeId();
+			modifyModeSpinner.setSelection(modifyMode - 2);
+		}
+		
+		
+		
 		
 		//back button
 		backButton = (Button) this.findViewById(R.id.back);
@@ -147,7 +176,7 @@ public class AddEvent extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		// getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 	
@@ -323,6 +352,30 @@ public class AddEvent extends Activity {
 		
 		@Override
 		public void onClick(View v) {
+			Intent intent=new Intent();
+    		intent.setClass(AddEvent.this,Main.class);
+    		
+    		if(editOrNew == 0){
+    			String title = event.getTitle();
+				List<Event> list = new ArrayList<Event>();
+				try {
+					list = dbHelper.getEventByTitle(title);
+					for(int i = 0; i < list.size(); i++){
+						dbHelper.deleteModify(list.get(i));
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}	
+				dbHelper.deleteEventByTitle(title);
+    		}
+    		else if(editOrNew == 1){
+    			dbHelper.deleteModify(event);
+    			dbHelper.deleteEventById(eventId);
+    		}
+    		
+    		
+    		
+    		
 			String eventTitle;
 			String eventContent;
 			String eventPlace;
@@ -365,6 +418,8 @@ public class AddEvent extends Activity {
 				return;
 			}
 			
+    		startActivity(intent);
+    		
 			try {
 				Mode mode = dbHelper.getModeById(modifyMode);
 				beginDate = new Date(dateFormat.parse(fromDatePickerButton.getText() + " " + fromTimePickerButton.getText() + ":00").getTime());
@@ -701,9 +756,6 @@ public class AddEvent extends Activity {
 				}
 				
 				Toast.makeText(AddEvent.this, "事件"+ eventTitle +"已经添加~\\(^o^)/~", Toast.LENGTH_SHORT).show();
-				Intent intent=new Intent();
-	    		intent.setClass(AddEvent.this,Main.class);
-	    		startActivity(intent);
 				finish();
 			} catch (ParseException e) {
 				e.printStackTrace();
