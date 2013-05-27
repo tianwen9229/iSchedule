@@ -34,6 +34,15 @@
             </intent-filter>
         </activity>
         
+        <activity
+            android:name="com.android.iSchedule.watchEvent"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.watchEvent" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
         <activity 
             android:name="com.android.iSchedule.AddMode" 
             android:label="@string/app_name" >

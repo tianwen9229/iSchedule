@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#8cc6ea" >
+        android:background="@drawable/head" >
 
         <Button
             android:id="@+id/back"
@@ -19,7 +19,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1.03"
-            android:background="#8cc6ea"
             android:gravity="center"
             android:text="@string/add_event"
             android:textSize="20sp"/>
@@ -139,12 +138,23 @@
     		    android:layout_height="wrap_content"
     		    android:text="@string/RepeatTime" />
 
-    		<EditText
-    		    android:id="@+id/editRepeatTime"
-    		    android:layout_width="match_parent"
-    		    android:layout_height="wrap_content"
-    		    android:ems="10"
-    		    android:inputType="number" />
+    		<LinearLayout
+             	android:layout_width="match_parent"
+             	android:layout_height="wrap_content"
+             	android:id="@+id/frequencyEndDate" >
+           		<Button
+           		    android:id="@+id/endDatePicker"
+           		    android:layout_width="0dp"
+           		    android:layout_height="wrap_content"
+           		    android:layout_weight="2" />
+
+           		<Button
+                   	android:id="@+id/endTimePicker"
+                   	android:layout_weight="1"
+                   	android:layout_width="0dp"
+                   	android:layout_height="wrap_content"
+                   	android:visibility="invisible" />
+           	</LinearLayout>
            		    		
     		<TextView
                 android:id="@+id/eventPlace"
