@@ -1,8 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"/>
+    <item android:id="@+id/add_event" android:title="@string/add_event"></item><item android:id="@+id/today" android:title="@string/Today"></item><item android:id="@+id/feedback" android:title="@string/Feedback"></item>
+        <item android:id="@+id/about" android:title="@string/About"></item>
+        <item android:id="@+id/exit" android:title="@string/Exit"></item>
+
 
 </menu>

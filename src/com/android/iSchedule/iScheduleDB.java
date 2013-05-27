@@ -137,7 +137,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return row;
 	}
 	
-	public int deleteModify(Event event, Mode mode){
+	public int deleteModify(Event event){
 		SQLiteDatabase db = getWritableDatabase();
 		String whereClause = "eid = ?";
 		String[] whereArgs = { Integer.toString((int) event.getEventId()) };
@@ -251,6 +251,26 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		// Log.d("test", SEARCH_EVENT);
 		
 		Cursor c = db.rawQuery(SEARCH_EVENT, null);
+		while (c.moveToNext()){
+			Event event = new Event(c.getString(1),c.getString(2),c.getString(3),
+					new Date(dateFormat.parse(c.getString(4)).getTime()), new Date(dateFormat.parse(c.getString(5)).getTime()),
+					new Date(dateFormat.parse(c.getString(6)).getTime()), new Date(dateFormat.parse(c.getString(7)).getTime()));
+			event.setEventId(c.getLong(0));
+			list.add(event);
+		}
+		c.close();
+		db.close();
+		
+		return list;
+	}
+	
+	public List<Event> getEventByTitle(String title) throws ParseException {
+		List<Event> list = new ArrayList<Event>();
+		SQLiteDatabase db = getReadableDatabase();
+		String selection = "title = ?";
+		String[] selectionArgs = { title };
+		Cursor c = db.query(EVENT_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+		
 		while (c.moveToNext()){
 			Event event = new Event(c.getString(1),c.getString(2),c.getString(3),
 					new Date(dateFormat.parse(c.getString(4)).getTime()), new Date(dateFormat.parse(c.getString(5)).getTime()),
