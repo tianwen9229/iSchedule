@@ -16,6 +16,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,9 +44,7 @@ public class watchEvent extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		NotificationManager nManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		
-		
+
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		super.onCreate(savedInstanceState);
@@ -121,6 +120,7 @@ public class watchEvent extends Activity{
 					intent.putExtras(bundle);
 					intent.setClass(watchEvent.this, AddEvent.class);
 					startActivity(intent);
+					finish();
 				}
 			};
 				
@@ -248,5 +248,16 @@ public class watchEvent extends Activity{
 		PendingIntent pIntent = PendingIntent.getBroadcast(context, (int)requestID, intent, 0);
 		AlarmManager aManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 		aManager.cancel(pIntent);
+	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event){
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Intent intent=new Intent();
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    		intent.setClass(watchEvent.this,Main.class);
+    		startActivity(intent);
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

@@ -1,13 +1,11 @@
 package com.android.iSchedule;
 
-import java.lang.reflect.Member;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -270,6 +268,24 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		String selection = "title = ?";
 		String[] selectionArgs = { title };
 		Cursor c = db.query(EVENT_TABLE_NAME, null, selection, selectionArgs, null, null, null);
+		
+		while (c.moveToNext()){
+			Event event = new Event(c.getString(1),c.getString(2),c.getString(3),
+					new Date(dateFormat.parse(c.getString(4)).getTime()), new Date(dateFormat.parse(c.getString(5)).getTime()),
+					new Date(dateFormat.parse(c.getString(6)).getTime()), new Date(dateFormat.parse(c.getString(7)).getTime()));
+			event.setEventId(c.getLong(0));
+			list.add(event);
+		}
+		c.close();
+		db.close();
+		
+		return list;
+	}
+	
+	public List<Event> getALLEvent() throws ParseException {
+		List<Event> list = new ArrayList<Event>();
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor c = db.query(EVENT_TABLE_NAME, null, null, null, null, null, "starttime");
 		
 		while (c.moveToNext()){
 			Event event = new Event(c.getString(1),c.getString(2),c.getString(3),

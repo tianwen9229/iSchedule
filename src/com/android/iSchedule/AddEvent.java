@@ -18,6 +18,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -552,4 +553,14 @@ public class AddEvent extends Activity {
 			}
 		}
 	};
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event){
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Intent intent=new Intent();
+    		intent.setClass(AddEvent.this,Main.class);
+    		startActivity(intent);
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

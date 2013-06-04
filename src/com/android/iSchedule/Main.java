@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -19,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +35,7 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 public class Main extends Activity {
     //
@@ -153,7 +157,9 @@ public class Main extends Activity {
 			bundle.putInt("editOrNew", -1);
 			bundle.putInt("eventId", -1);
 			intent.putExtras(bundle);
-			intent.setClass(Main.this, AddEvent.class);
+			//intent.setClass(Main.this, AddEvent.class);
+			//startActivity(intent);
+			intent.setClass(Main.this, findAllEvents.class);
 			startActivity(intent);
     		finish();
 		}
@@ -358,6 +364,33 @@ public class Main extends Activity {
 		PendingIntent pIntent = PendingIntent.getBroadcast(context, (int)requestID, intent, 0);
 		AlarmManager aManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 		aManager.cancel(pIntent);
+	}
+	
+	
+	private static Boolean isExit = false;  
+    private static Boolean hasTask = false;  
+    Timer tExit = new Timer();  
+    TimerTask task = new TimerTask() {   
+        public void run() {  
+            isExit = false;  
+            hasTask = true;  
+        }  
+    };  
+	public boolean onKeyDown(int keyCode, KeyEvent event){		
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			if(isExit == false ) {  
+				isExit = true;  
+				Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();  
+				if(!hasTask) {  
+					tExit.schedule(task, 1500);  
+					Log.d("isExit", isExit.toString());
+					Log.d("hasTask", hasTask.toString());
+				}
+			} else {
+				finish();
+			}
+		}
+		return false;
 	}
 	
 }
