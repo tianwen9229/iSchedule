@@ -17,7 +17,6 @@ public class ModifyReceiver extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
 		
 		Log.i(tag, "ModifyReceiver=======================================================");
-		Log.i(tag, "MID" + intent.getIntExtra("MID", -1));
 		Log.i(tag, "VOLUME="+intent.getIntExtra("VOLUME", -1)+"  VIBRATE="+intent.getIntExtra("VIBRATE", -1));
 		
 		
@@ -27,17 +26,27 @@ public class ModifyReceiver extends BroadcastReceiver{
 	
 		int VOLUME = intent.getIntExtra("VOLUME", -1);
 		int VIBRATE = intent.getIntExtra("VIBRATE", -1);
+		int eventId = intent.getIntExtra("eventId", -1);
+		
+		
+		Log.i(tag, "eventId=" + eventId);
+		
 		
 		int icon = R.drawable.ic_launcher;
-		CharSequence text = "已经更改为：" + (VOLUME == 1?" 响铃":" 静音") + " & " + (VIBRATE == 1?"震动":"不震动" + "  么么哒~") ;
+		CharSequence text = "已经更改为：" + (VOLUME == 1?" 响铃":" 静音") + " & " + (VIBRATE == 1?"震动":"不震动") + "  么么哒~" ;
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon, text, when);
 		
-		Intent nIntent = new Intent(context, Main.class);
-		PendingIntent nPendingIntent = PendingIntent.getActivity(context, 0, nIntent, 0);
+		Intent nIntent = new Intent(context, watchEvent.class);
+		nIntent.putExtra("eventId", eventId);
+		nIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+		Log.i(tag, "nIntent=" + nIntent.getIntExtra("eventId", -1));
+		PendingIntent nPendingIntent = PendingIntent.getActivity(context, eventId, nIntent, 0);
 		notification.setLatestEventInfo(context, "情景模式", text, nPendingIntent);
 		
-		nManager.notify(1, notification);
+		
+		
+		nManager.notify(eventId, notification);
 		
 		switch (VOLUME * 10 + VIBRATE){
 			case 11: ringAndVibrate(audio); break;

@@ -87,7 +87,7 @@ public class DiaryReceiver extends BroadcastReceiver{
 				Log.i(tag, helper.getModeByEventId((int) event.getEventId()).getName());
 				eIntent.putExtra("VOLUME", helper.getModeByEventId((int) event.getEventId()).getVolume());
 				eIntent.putExtra("VIBRATE", helper.getModeByEventId((int) event.getEventId()).getVibrate());
-				eIntent.putExtra("MID", (int)event.getEventId() * 2);
+				eIntent.putExtra("eventId", (int)event.getEventId());
 				
 				PendingIntent ePendingIntent = PendingIntent.getBroadcast(context, (int)(event.getEventId() * 2), eIntent, 0);
 				
@@ -104,7 +104,7 @@ public class DiaryReceiver extends BroadcastReceiver{
 				Intent eIntent = new Intent(context, ModifyReceiver.class); 
 				eIntent.putExtra("VOLUME", helper.getModeById(1).getVolume());
 				eIntent.putExtra("VIBRATE", helper.getModeById(1).getVibrate());
-				eIntent.putExtra("MID", (int)event.getEventId() * 2 + 1);
+				eIntent.putExtra("eventId", (int)event.getEventId());
 				
 				PendingIntent ePendingIntent = PendingIntent.getBroadcast(context, (int)(event.getEventId() * 2 + 1), eIntent, 0);
 				

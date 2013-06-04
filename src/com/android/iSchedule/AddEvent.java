@@ -64,6 +64,7 @@ public class AddEvent extends Activity {
 	public int editOrNew;
 	public int eventId;
 	public Event event;
+	public String editString = "添加";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +149,7 @@ public class AddEvent extends Activity {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+			editString = "修改";
 			addEventTextView.setText("编辑日程");
 			eventTitleEditText.setText(event.getTitle());
 			eventContentEditText.setText(event.getContent());
@@ -543,7 +545,7 @@ public class AddEvent extends Activity {
 					Toast.makeText(AddEvent.this, "ERROR!!!", Toast.LENGTH_LONG).show();
 				}
 				
-				Toast.makeText(AddEvent.this, "事件"+ eventTitle +"已经添加~\\(^o^)/~", Toast.LENGTH_SHORT).show();
+				Toast.makeText(AddEvent.this, "事件"+ eventTitle +"已经成功"+ editString +"~\\(^o^)/~", Toast.LENGTH_SHORT).show();
 				finish();
 			} catch (ParseException e) {
 				e.printStackTrace();

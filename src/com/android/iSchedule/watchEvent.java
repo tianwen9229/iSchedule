@@ -9,6 +9,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,6 +42,11 @@ public class watchEvent extends Activity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		NotificationManager nManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+		
+		
+		
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.watch_event);
@@ -48,6 +54,9 @@ public class watchEvent extends Activity{
 		Integer EventId;
 		Bundle bundle = this.getIntent().getExtras();
 		EventId = bundle.getInt("eventId");
+		Log.i("watch", "" + this.getIntent().getIntExtra("eventId", -1));
+		
+		nManager.cancel(EventId);
 		
 		eventTitleTextView = (TextView)this.findViewById(R.id.eventTitle);
 		eventPlaceTextView = (TextView)this.findViewById(R.id.eventPlace);
@@ -90,6 +99,7 @@ public class watchEvent extends Activity{
 		@Override
 		public void onClick(View v) {
 			Intent intent=new Intent();
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     		intent.setClass(watchEvent.this,Main.class);
     		startActivity(intent);
 			finish();
@@ -111,7 +121,6 @@ public class watchEvent extends Activity{
 					intent.putExtras(bundle);
 					intent.setClass(watchEvent.this, AddEvent.class);
 					startActivity(intent);
-					finish();
 				}
 			};
 				
@@ -145,7 +154,6 @@ public class watchEvent extends Activity{
 					intent.putExtras(bundle);
 					intent.setClass(watchEvent.this, AddEvent.class);
 					startActivity(intent);
-					finish();
 				}
 			};
 				
