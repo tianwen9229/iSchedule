@@ -33,6 +33,7 @@ public class watchEvent extends Activity{
 	public TextView startTimeTextView;
 	public TextView endTimeTextView;
 	public TextView contentTextView;
+	public TextView modifyModeTextView;
 	public String[] item = new String[] {"更改这个活动主题一致的所有活动","仅更改当前活动" };
 	public Button backButton;
 	public Button editButton;
@@ -63,6 +64,8 @@ public class watchEvent extends Activity{
 		startTimeTextView = (TextView)this.findViewById(R.id.eventStartTime);
 		endTimeTextView = (TextView)this.findViewById(R.id.eventEndTime);
 		contentTextView = (TextView)this.findViewById(R.id.eventContent);
+		modifyModeTextView = (TextView)this.findViewById(R.id.modifyMode);
+		
 		
 		backButton = (Button)this.findViewById(R.id.back);
 		editButton = (Button)this.findViewById(R.id.edit);
@@ -87,6 +90,21 @@ public class watchEvent extends Activity{
 			endTimeTextView.setText(temp);
 			temp = "活动内容:" + pickEvent.getContent();
 			contentTextView.setText(temp);
+			temp = "情景模式：";
+			Mode mode = new Mode("temp", 1, 1);
+			mode = dbHelper.getModeByEventId(EventId);
+			if(mode.getVibrate() == 1){
+				temp += "振动" ;
+			} else {
+				temp += "不振动";
+			}
+			temp += " && ";
+			if(mode.getVolume() == 1){
+				temp += "响铃" ;
+			} else {
+				temp += "静音";
+			}
+			modifyModeTextView.setText(temp);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

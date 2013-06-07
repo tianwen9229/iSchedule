@@ -127,7 +127,7 @@ public class AddEvent extends Activity {
 		String[] frequencyItems = new String[]{NoRepeat, EveryDay, OnceAWeek, 
 			OnceAMonth, OnceAYear};
 		ArrayAdapter<String> frequencySpinnerAdapter = new ArrayAdapter<String>(this,
-				    android.R.layout.simple_spinner_item, frequencyItems);
+				    android.R.layout.simple_list_item_1, frequencyItems);
 		frequencySpinner.setAdapter(frequencySpinnerAdapter);
 
 		frequencySpinner.setOnItemSelectedListener(frequencySpinnerOnItemSelect);
@@ -140,7 +140,7 @@ public class AddEvent extends Activity {
 			modeName.add(list.get(i).getName());
 		}
 		ArrayAdapter<String> modifySpinnerAdapter = new ArrayAdapter<String>(this,
-			    android.R.layout.simple_spinner_item, modeName);
+			    android.R.layout.simple_list_item_1, modeName);
 		modifyModeSpinner.setAdapter(modifySpinnerAdapter);
 		modifyModeSpinner.setOnItemSelectedListener(modifySpinnerOnItemSelect);
 		

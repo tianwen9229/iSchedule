@@ -43,6 +43,7 @@ public class Main extends Activity {
 	
 	public ImageButton menuButton;
 	public Button datePickButton;
+	public ImageButton findEventButton;
 	public ImageButton addEventButton;
 	public ListView eventList;
 	public List<Map<String, String>> events = new ArrayList<Map<String,String>>();
@@ -62,6 +63,7 @@ public class Main extends Activity {
 		menuButton = (ImageButton) this.findViewById(R.id.Menu);
 		datePickButton = (Button) this.findViewById(R.id.datePick);
 		addEventButton = (ImageButton) this.findViewById(R.id.addEvent);
+		findEventButton = (ImageButton) this.findViewById(R.id.findEvent);
 		eventList = (ListView) this.findViewById(R.id.Event);
 
 		SimpleAdapter adapter = new SimpleAdapter(this, events, R.layout.event_item
@@ -90,6 +92,7 @@ public class Main extends Activity {
 		datePickButton.setText(dateFormat.format(curDate));
 		datePickButton.setOnClickListener(DatePickOnClick);
 		addEventButton.setOnClickListener(addOnClick);
+		findEventButton.setOnClickListener(findOnClick);
 		menuButton.setOnClickListener(menuOnClick);
 		
 		//闹钟管理
@@ -157,14 +160,21 @@ public class Main extends Activity {
 			bundle.putInt("editOrNew", -1);
 			bundle.putInt("eventId", -1);
 			intent.putExtras(bundle);
-			//intent.setClass(Main.this, AddEvent.class);
-			//startActivity(intent);
+			intent.setClass(Main.this, AddEvent.class);
+			startActivity(intent);
+    		finish();
+		}
+	};
+	public OnClickListener findOnClick = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent();
 			intent.setClass(Main.this, findAllEvents.class);
 			startActivity(intent);
     		finish();
 		}
 	};
-
 	public void updateList(Date date) {
 		if(events.size() > 0){
 			events.clear();
@@ -383,10 +393,10 @@ public class Main extends Activity {
 				Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();  
 				if(!hasTask) {  
 					tExit.schedule(task, 1500);  
-					Log.d("isExit", isExit.toString());
-					Log.d("hasTask", hasTask.toString());
 				}
 			} else {
+				isExit = false;
+				hasTask = false;
 				finish();
 			}
 		}
