@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:focusable="true" 
+        android:focusableInTouchMode="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/head" >
+
+        <Button
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back" />
+		<Button
+            android:id="@+id/pagging"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="5dp"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+       	<AutoCompleteTextView
+           	android:id="@+id/find_event_title"
+       	 	android:layout_width="0dp"
+           	android:layout_height="match_parent"
+           	android:layout_weight="1.03"
+           	android:ems="10"
+           	android:hint="@string/find_event"
+           	android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/selectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_all" />
+
+        <Button
+            android:id="@+id/unSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/un_select_all" />
+
+        <Button
+            android:id="@+id/deleteEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_selected" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/eventList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fastScrollEnabled="true" >
+    </ListView>
+
+</LinearLayout>

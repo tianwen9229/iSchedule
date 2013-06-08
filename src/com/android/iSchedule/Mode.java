@@ -1,5 +1,5 @@
 package com.android.iSchedule;
-
+//Mode类
 public class Mode {
 	
 	private long modeId;

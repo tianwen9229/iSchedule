@@ -22,6 +22,19 @@
             android:background="@drawable/head" />
 
         <ImageButton
+            android:id="@+id/findEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/find" />
+
+        <Button
+            android:id="@+id/pagging"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="5dp"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+
+        <ImageButton
             android:id="@+id/addEvent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

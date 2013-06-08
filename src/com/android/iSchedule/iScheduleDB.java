@@ -1,13 +1,11 @@
 package com.android.iSchedule;
 
-import java.lang.reflect.Member;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -15,7 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
+//iSchedule的SQLite数据库类
 public class iScheduleDB extends SQLiteOpenHelper {
 
 	private static final String DB_NAME = "iSchedule.db";
@@ -25,6 +23,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	private static final String MODIFY_TABLE_NAME = "modify";
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
+	//每个表的建表脚本
 	private static final String EVENT_SQL_CREATE= "create table " + EVENT_TABLE_NAME +
 	" ( eid integer primary key autoincrement,"
 	+ " title text not null, " 
@@ -58,6 +57,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		//允许建表脚本，创建3个表
 		db.execSQL(EVENT_SQL_CREATE);
 		db.execSQL(MODE_SQL_CREATE);
 		db.execSQL(MODIFY_SQL_CREATE);
@@ -65,9 +65,10 @@ public class iScheduleDB extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO 自动生成的方法存根
+		// Nothing
 	}
 	
+	// insert event
 	public long insert(Event entity) {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues values = new ContentValues();
@@ -85,6 +86,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return rid;
 	}
 	
+	// insert modify
 	public long insert(Mode entity) {
 		SQLiteDatabase db = getWritableDatabase();
 		Cursor c = db.rawQuery("select * from " + MODE_TABLE_NAME + " ;", null);
@@ -99,6 +101,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return rid;
 	}
 	
+	// insert modifyMode
 	public long insert(Event event, Mode mode) {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues values = new ContentValues();
@@ -110,6 +113,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return rid;
 	}
 	
+	//删除数据操作
 	public int deleteEventById(Integer id){
 		SQLiteDatabase db = getWritableDatabase();
 		String whereClause = "eid = ?";
@@ -146,6 +150,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return row;
 	}
 	
+	//更新数据操作
 	public int updateEventById(Event entity) {
 		SQLiteDatabase db = getWritableDatabase();
 		String whereClause = "eid = ?";
@@ -206,6 +211,7 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return row;
 	}
 	
+	//查询数据操作
 	public Event getEventById(Integer id) throws ParseException{
 		Event event = null;
 		SQLiteDatabase db = getReadableDatabase();
@@ -284,6 +290,24 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		return list;
 	}
 	
+	public List<Event> getALLEvent() throws ParseException {
+		List<Event> list = new ArrayList<Event>();
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor c = db.query(EVENT_TABLE_NAME, null, null, null, null, null, "starttime");
+		
+		while (c.moveToNext()){
+			Event event = new Event(c.getString(1),c.getString(2),c.getString(3),
+					new Date(dateFormat.parse(c.getString(4)).getTime()), new Date(dateFormat.parse(c.getString(5)).getTime()),
+					new Date(dateFormat.parse(c.getString(6)).getTime()), new Date(dateFormat.parse(c.getString(7)).getTime()));
+			event.setEventId(c.getLong(0));
+			list.add(event);
+		}
+		c.close();
+		db.close();
+		
+		return list;
+	}
+	
 	public List<Mode> getAllModes() {
 		List<Mode> list = new ArrayList<Mode>();
 		SQLiteDatabase db = getReadableDatabase();
@@ -314,8 +338,4 @@ public class iScheduleDB extends SQLiteOpenHelper {
 		db.close();
 		return mode;
 	}
-	// update operation
-	// each search operation
-	
-	
 }
