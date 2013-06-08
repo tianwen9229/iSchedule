@@ -9,12 +9,14 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +33,7 @@ public class watchEvent extends Activity{
 	public TextView startTimeTextView;
 	public TextView endTimeTextView;
 	public TextView contentTextView;
+	public TextView modifyModeTextView;
 	public String[] item = new String[] {"更改这个活动主题一致的所有活动","仅更改当前活动" };
 	public Button backButton;
 	public Button editButton;
@@ -41,6 +44,9 @@ public class watchEvent extends Activity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		NotificationManager nManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.watch_event);
@@ -48,6 +54,9 @@ public class watchEvent extends Activity{
 		Integer EventId;
 		Bundle bundle = this.getIntent().getExtras();
 		EventId = bundle.getInt("eventId");
+		Log.i("watch", "" + this.getIntent().getIntExtra("eventId", -1));
+		
+		nManager.cancel(EventId);
 		
 		eventTitleTextView = (TextView)this.findViewById(R.id.eventTitle);
 		eventPlaceTextView = (TextView)this.findViewById(R.id.eventPlace);
@@ -55,6 +64,8 @@ public class watchEvent extends Activity{
 		startTimeTextView = (TextView)this.findViewById(R.id.eventStartTime);
 		endTimeTextView = (TextView)this.findViewById(R.id.eventEndTime);
 		contentTextView = (TextView)this.findViewById(R.id.eventContent);
+		modifyModeTextView = (TextView)this.findViewById(R.id.modifyMode);
+		
 		
 		backButton = (Button)this.findViewById(R.id.back);
 		editButton = (Button)this.findViewById(R.id.edit);
@@ -79,6 +90,21 @@ public class watchEvent extends Activity{
 			endTimeTextView.setText(temp);
 			temp = "活动内容:" + pickEvent.getContent();
 			contentTextView.setText(temp);
+			temp = "情景模式：";
+			Mode mode = new Mode("temp", 1, 1);
+			mode = dbHelper.getModeByEventId(EventId);
+			if(mode.getVibrate() == 1){
+				temp += "振动" ;
+			} else {
+				temp += "不振动";
+			}
+			temp += " && ";
+			if(mode.getVolume() == 1){
+				temp += "响铃" ;
+			} else {
+				temp += "静音";
+			}
+			modifyModeTextView.setText(temp);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -90,6 +116,7 @@ public class watchEvent extends Activity{
 		@Override
 		public void onClick(View v) {
 			Intent intent=new Intent();
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     		intent.setClass(watchEvent.this,Main.class);
     		startActivity(intent);
 			finish();
@@ -127,6 +154,8 @@ public class watchEvent extends Activity{
 		getMenuInflater().inflate(R.menu.watch_event, menu);
 		return true;
 	}
+	
+	//设置菜单项点击的响应
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		if(item.getItemId() == R.id.Delete)
@@ -145,7 +174,6 @@ public class watchEvent extends Activity{
 					intent.putExtras(bundle);
 					intent.setClass(watchEvent.this, AddEvent.class);
 					startActivity(intent);
-					finish();
 				}
 			};
 				
@@ -240,5 +268,17 @@ public class watchEvent extends Activity{
 		PendingIntent pIntent = PendingIntent.getBroadcast(context, (int)requestID, intent, 0);
 		AlarmManager aManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 		aManager.cancel(pIntent);
+	}
+	
+	//设置返回键按下的响应
+	public boolean onKeyDown(int keyCode, KeyEvent event){
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			Intent intent=new Intent();
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    		intent.setClass(watchEvent.this,Main.class);
+    		startActivity(intent);
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }
