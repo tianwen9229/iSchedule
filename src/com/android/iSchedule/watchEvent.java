@@ -154,6 +154,8 @@ public class watchEvent extends Activity{
 		getMenuInflater().inflate(R.menu.watch_event, menu);
 		return true;
 	}
+	
+	//设置菜单项点击的响应
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		if(item.getItemId() == R.id.Delete)
@@ -268,6 +270,7 @@ public class watchEvent extends Activity{
 		aManager.cancel(pIntent);
 	}
 	
+	//设置返回键按下的响应
 	public boolean onKeyDown(int keyCode, KeyEvent event){
 		if(keyCode == KeyEvent.KEYCODE_BACK){
 			Intent intent=new Intent();

@@ -56,7 +56,7 @@ public class AddEvent extends Activity {
 	public iScheduleDB dbHelper = new iScheduleDB(this);
 	public TextView addEventTextView;
 	
-	public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+	public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日  E");
 	public SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	public SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -87,7 +87,6 @@ public class AddEvent extends Activity {
 		frequencyEndDateLayout = (LinearLayout) this.findViewById(R.id.frequencyEndDate);
 		frequencyEndDateLayout.setVisibility(8);
 		frequencyEndTextView.setVisibility(8);
-		Log.d("test", "pause2");
 		// set Date and time
 		fromDatePickerButton = (Button)this.findViewById(R.id.fromDatePicker);
 		fromDatePickerButton.setText(dateFormat.format(curDate));
@@ -99,7 +98,10 @@ public class AddEvent extends Activity {
 		fromTimePickerButton.setText(timeFormat.format(curDate));
 		fromTimePickerButton.setOnClickListener(fromTimeOnClick);
 		toTimePickerButton = (Button)this.findViewById(R.id.toTimePicker);
-		toTimePickerButton.setText(timeFormat.format(curDate));
+		Calendar fromCalendar = new GregorianCalendar();
+		fromCalendar.setTime(curDate);
+		fromCalendar.add(Calendar.HOUR, 1);
+		toTimePickerButton.setText(timeFormat.format(fromCalendar.getTime()));
 		toTimePickerButton.setOnClickListener(toTimeOnClick);
 		
 		
@@ -114,22 +116,27 @@ public class AddEvent extends Activity {
 		//set frequency spinner
 		frequencyResultText = (TextView)this.findViewById(R.id.frequencyResult);
 		frequencySpinner = (Spinner)this.findViewById(R.id.frequencySpinner);
-		Log.d("test", "pause3");
-		String[] week = {"日", "一", "二", "三", "四", "五", "六"};
-		String dayOfWeek = week[curDate.getDay()];
-		String dayOfMonth = Integer.toString(curDate.getDate()) + "日";
-		String dayOfYear = Integer.toString(curDate.getMonth()+1)+ "月" + Integer.toString(curDate.getDate()) + "日";
-		String NoRepeat = "一次性活动";
-		String EveryDay = "每天";
-		String OnceAWeek = "每周(每周的星期"+dayOfWeek+")";
-		String OnceAMonth = "每月(每月的"+dayOfMonth+")";
-		String OnceAYear = "每年(每年的"+dayOfYear+")";
-		String[] frequencyItems = new String[]{NoRepeat, EveryDay, OnceAWeek, 
-			OnceAMonth, OnceAYear};
-		ArrayAdapter<String> frequencySpinnerAdapter = new ArrayAdapter<String>(this,
-				    android.R.layout.simple_list_item_1, frequencyItems);
-		frequencySpinner.setAdapter(frequencySpinnerAdapter);
+		try {
+			java.util.Date fromDate = dateFormat.parse(fromDatePickerButton.getText().toString());
+			String[] week = {"日", "一", "二", "三", "四", "五", "六"};
+			String dayOfWeek = week[fromDate.getDay()];
+			String dayOfMonth = Integer.toString(fromDate.getDate()) + "日";
+			String dayOfYear = Integer.toString(fromDate.getMonth()+1)+ "月" + Integer.toString(fromDate.getDate()) + "日";
+			String NoRepeat = "一次性活动";
+			String EveryDay = "每天";
+			String OnceAWeek = "每周(每周的星期"+dayOfWeek+")";
+			String OnceAMonth = "每月(每月的"+dayOfMonth+")";
+			String OnceAYear = "每年(每年的"+dayOfYear+")";
+			String[] frequencyItems = new String[]{NoRepeat, EveryDay, OnceAWeek, 
+				OnceAMonth, OnceAYear};
+			ArrayAdapter<String> frequencySpinnerAdapter = new ArrayAdapter<String>(this,
+					    android.R.layout.simple_list_item_1, frequencyItems);
+			frequencySpinner.setAdapter(frequencySpinnerAdapter);
 
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		
 		frequencySpinner.setOnItemSelectedListener(frequencySpinnerOnItemSelect);
 		//set modify spinner
 		modifyModeSpinner = (Spinner) this.findViewById(R.id.modifyModeSpinner);
@@ -163,10 +170,7 @@ public class AddEvent extends Activity {
 			int modifyMode = (int) dbHelper.getModeByEventId(Integer.valueOf(eventId)).getModeId();
 			modifyModeSpinner.setSelection(modifyMode - 2);
 		}
-		
-		
-		
-		
+
 		//back button
 		backButton = (Button) this.findViewById(R.id.back);
 		backButton.setOnClickListener(backButtonOnClick);
@@ -192,6 +196,35 @@ public class AddEvent extends Activity {
 			pickDate.setMonth(monthOfYear);
 			pickDate.setDate(dayOfMonth);
 			fromDatePickerButton.setText(dateFormat.format(pickDate));
+			java.util.Date toDatePickerButtonDate;
+			try {
+				toDatePickerButtonDate = dateFormat.parse(toDatePickerButton.getText().toString());
+				if(toDatePickerButtonDate.before(pickDate))
+					toDatePickerButton.setText(dateFormat.format(pickDate));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				java.util.Date fromDate = dateFormat.parse(fromDatePickerButton.getText().toString());
+				String[] week = {"日", "一", "二", "三", "四", "五", "六"};
+				String dayOfWeek = week[fromDate.getDay()];
+				String dayOfMonth1 = Integer.toString(fromDate.getDate()) + "日";
+				String dayOfYear = Integer.toString(fromDate.getMonth()+1)+ "月" + Integer.toString(fromDate.getDate()) + "日";
+				String NoRepeat = "一次性活动";
+				String EveryDay = "每天";
+				String OnceAWeek = "每周(每周的星期"+dayOfWeek+")";
+				String OnceAMonth = "每月(每月的"+dayOfMonth1+")";
+				String OnceAYear = "每年(每年的"+dayOfYear+")";
+				String[] frequencyItems = new String[]{NoRepeat, EveryDay, OnceAWeek, 
+					OnceAMonth, OnceAYear};
+				ArrayAdapter<String> frequencySpinnerAdapter = new ArrayAdapter<String>(AddEvent.this,
+						    android.R.layout.simple_list_item_1, frequencyItems);
+				frequencySpinner.setAdapter(frequencySpinnerAdapter);
+
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}; 
 	
@@ -215,6 +248,10 @@ public class AddEvent extends Activity {
 			newDate.setMinutes(minute);
 			pickDate.setTime(newDate.getTime());
 			fromTimePickerButton.setText(timeFormat.format(pickDate));
+			Calendar fromCalendar = new GregorianCalendar();
+			fromCalendar.setTime(newDate);
+			fromCalendar.add(Calendar.HOUR, 1);
+			toTimePickerButton.setText(timeFormat.format(fromCalendar.getTime()));
 		}
 	};
 	
@@ -351,6 +388,7 @@ public class AddEvent extends Activity {
 		}
 	};
 	
+	//完成的按钮响应
 	public OnClickListener doneButtonOnClick = new OnClickListener() {
 		
 		@Override
@@ -554,6 +592,7 @@ public class AddEvent extends Activity {
 		}
 	};
 	
+	//设置返回键跳转主界面
 	public boolean onKeyDown(int keyCode, KeyEvent event){
 		if(keyCode == KeyEvent.KEYCODE_BACK){
 			Intent intent=new Intent();

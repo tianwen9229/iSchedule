@@ -5,7 +5,7 @@ import java.sql.Date;
 import android.R.integer;
 import android.R.string;
 import android.text.format.Time;
-
+// Event类
 public class Event {
 	
 	private long EventId;

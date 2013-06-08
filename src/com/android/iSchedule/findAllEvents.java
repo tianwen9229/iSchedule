@@ -77,7 +77,9 @@ public class findAllEvents extends Activity{
 		
 		ArrayAdapter<String> eventTitleAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, eventTitle);
 		inputTitle.setAdapter(eventTitleAdapter);
+		//设置最小的自动补全长度是1
 		inputTitle.setThreshold(1);
+		//设置文本改变时的响应
 		inputTitle.addTextChangedListener(watcher);
 		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		
@@ -108,6 +110,8 @@ public class findAllEvents extends Activity{
 		}
 	};
 	
+	//更新列表，参数是事件主题输入框的文本
+	//如果参数为空的字符串，那返回所有的事件
 	public void updateList(String eventsTitle) {
 		if(allEvents.size() > 0){
 			allEvents.clear();
@@ -166,6 +170,7 @@ public class findAllEvents extends Activity{
 			finish();
 		}
 	};
+	
 	public OnClickListener deleteOnclick = new OnClickListener() {
 		
 		@Override
@@ -182,6 +187,7 @@ public class findAllEvents extends Activity{
 		}
 	};
 	
+	//设置返回键按下的响应
 	public boolean onKeyDown(int keyCode, KeyEvent event){
 		if(keyCode == KeyEvent.KEYCODE_BACK){
 			Intent intent=new Intent();
